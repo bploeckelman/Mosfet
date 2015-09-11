@@ -33,6 +33,7 @@ public class Assets {
 
     public static Texture testTexture;
     public static Texture circleTexture;
+    public static Texture stoneTexture;
     public static Texture spritesheetTexture;
 
     public static TextureRegion[][] spriteRegions;
@@ -57,6 +58,7 @@ public class Assets {
         spritesheetTexture = new Texture("spritesheet.png");
 
         spriteRegions = TextureRegion.split(spritesheetTexture, Config.tileSize, Config.tileSize);
+        stoneTexture = new Texture("stone.png");
     }
 
     public static void dispose() {
@@ -64,6 +66,7 @@ public class Assets {
         font.dispose();
         testTexture.dispose();
         circleTexture.dispose();
+        stoneTexture.dispose();
         spritesheetTexture.dispose();
     }
 
