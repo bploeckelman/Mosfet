@@ -85,6 +85,10 @@ public class Level {
     }
 
     public void render(SpriteBatch batch) {
+        render(batch, false);
+    }
+
+    public void render(SpriteBatch batch, boolean inGame) {
         TextureRegion texture = Assets.blankRegion;
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
@@ -95,7 +99,8 @@ public class Level {
                     case 2: texture = Entity.Type.WALL.getRegion(); break;
                     case 3: texture = Entity.Type.EXIT.getRegion(); break;
                 }
-                batch.draw(texture, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+                if (inGame) batch.draw(texture, x, y, 1, 1);
+                else        batch.draw(texture, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
             }
         }
     }

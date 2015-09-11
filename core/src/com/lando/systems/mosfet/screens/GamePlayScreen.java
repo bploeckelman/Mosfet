@@ -138,10 +138,9 @@ public class GamePlayScreen extends GameScreen {
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             // Draw the world
-
             batch.begin();
             batch.setProjectionMatrix(camera.combined);
-            level.render(batch);
+            level.render(batch, true);
             for (BaseGameObject obj : gameObjects){
                 obj.render(batch);
             }
