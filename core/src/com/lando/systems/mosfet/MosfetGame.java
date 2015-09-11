@@ -11,7 +11,7 @@ public class MosfetGame extends Game {
 	@Override
 	public void create () {
 		Assets.load();
-		setScreen(new GamePlayScreen(this, new Level(Config.tilesWide, Config.tilesHigh)));
+		setScreen(new GamePlayScreen(this, new Level(15, 20)));
 	}
 
 	@Override
