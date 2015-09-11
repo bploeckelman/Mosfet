@@ -3,6 +3,7 @@ package com.lando.systems.mosfet.utils;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenManager;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -25,7 +26,11 @@ public class Assets {
     public static SpriteBatch  batch;
     public static BitmapFont   font;
 
+    private static final String PREFS_FILE = "mostfet-prefs";
+    public static Preferences prefs;
+
     public static Texture testTexture;
+    public static Texture circleTexture;
 
     public static void load() {
         if (tween == null) {
@@ -40,13 +45,17 @@ public class Assets {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
+        prefs = Gdx.app.getPreferences(PREFS_FILE);
+
         testTexture = new Texture("badlogic.jpg");
+        circleTexture = new Texture("circle.png");
     }
 
     public static void dispose() {
         batch.dispose();
         font.dispose();
         testTexture.dispose();
+        circleTexture.dispose();
     }
 
     private static ShaderProgram compileShaderProgram(FileHandle vertSource, FileHandle fragSource) {
