@@ -14,13 +14,12 @@ import com.lando.systems.mosfet.utils.Assets;
 /**
  * Brian Ploeckelman created on 9/10/2015.
  */
-public class PrototypeScreen extends GameScreen {
+public class GamePlayScreen extends GameScreen {
 
-    OrthographicCamera uiCamera;
     FrameBuffer        sceneFrameBuffer;
     TextureRegion      sceneRegion;
 
-    public PrototypeScreen(MosfetGame game) {
+    public GamePlayScreen(MosfetGame game) {
         super(game);
         Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
 
@@ -28,9 +27,7 @@ public class PrototypeScreen extends GameScreen {
         camera.setToOrtho(false, Config.tilesWide, Config.tilesHigh);
         camera.update();
 
-        uiCamera = new OrthographicCamera();
-        uiCamera.setToOrtho(false, Config.width, Config.height);
-        uiCamera.update();
+
         sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, false);
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
         sceneRegion.flip(false, true);

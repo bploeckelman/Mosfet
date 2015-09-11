@@ -18,6 +18,7 @@ import com.lando.systems.mosfet.utils.Assets;
 public abstract class GameScreen extends ScreenAdapter {
 
     protected final MosfetGame game;
+    OrthographicCamera uiCamera;
 
     protected SpriteBatch        batch;
     protected Vector3            mouseScreenPos;
@@ -31,6 +32,10 @@ public abstract class GameScreen extends ScreenAdapter {
         mouseWorldPos = new Vector3();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Config.width, Config.height);
+
+        uiCamera = new OrthographicCamera();
+        uiCamera.setToOrtho(false, Config.width, Config.height);
+        uiCamera.update();
     }
 
     public void update(float delta) {

@@ -2,7 +2,7 @@ package com.lando.systems.mosfet;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.lando.systems.mosfet.screens.PrototypeScreen;
+import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
 
 public class MosfetGame extends Game {
@@ -10,7 +10,7 @@ public class MosfetGame extends Game {
 	@Override
 	public void create () {
 		Assets.load();
-		setScreen(new PrototypeScreen(this));
+		setScreen(new GamePlayScreen(this));
 	}
 
 	@Override
