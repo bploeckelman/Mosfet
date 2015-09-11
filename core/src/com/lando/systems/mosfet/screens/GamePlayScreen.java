@@ -7,8 +7,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
+import com.lando.systems.mosfet.gameobjects.BaseGameObject;
 import com.lando.systems.mosfet.utils.Assets;
 
 /**
@@ -16,16 +21,50 @@ import com.lando.systems.mosfet.utils.Assets;
  */
 public class GamePlayScreen extends GameScreen {
 
-    FrameBuffer        sceneFrameBuffer;
-    TextureRegion      sceneRegion;
+    FrameBuffer             sceneFrameBuffer;
+    TextureRegion           sceneRegion;
+
+    int                     levelHeight;
+    int                     levelWidth;
+    Array<BaseGameObject>   gameObjects;
 
     public GamePlayScreen(MosfetGame game) {
         super(game);
+
+        // TODO pass level information into here.
+
         Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
 
+        levelHeight = 20;
+        levelWidth = 15;
+
         // Show a tile portion of the map
-        camera.setToOrtho(false, Config.tilesWide, Config.tilesHigh);
+        float aspect = Config.width/(float)Config.height;
+        float levelAspect = levelWidth/ (float)levelHeight;
+        float cameraWidth;
+        float cameraHeight;
+        Vector2 cameraOffset = new Vector2();
+        if (levelAspect >= aspect){
+            cameraWidth = levelWidth;
+            cameraHeight = levelWidth / aspect;
+            cameraOffset.x = 0;
+            cameraOffset.y = - ((cameraHeight - levelHeight)/2);
+        } else {
+            cameraWidth = levelHeight * aspect;
+            cameraHeight = levelHeight;
+            cameraOffset.x = - ((cameraWidth - levelWidth)/2);
+            cameraOffset.y = 0;
+        }
+        camera.setToOrtho(false, cameraWidth, cameraHeight);
+        camera.translate(cameraOffset);
         camera.update();
+
+        gameObjects = new Array<BaseGameObject>();
+        for (int y = 0; y < levelHeight; y++){
+            for (int x = 0; x < levelWidth; x++){
+                gameObjects.add(new BaseGameObject(new Vector2(x, y)));
+            }
+        }
 
 
         sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, false);
@@ -47,9 +86,12 @@ public class GamePlayScreen extends GameScreen {
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             // Draw the world
+
             batch.begin();
             batch.setProjectionMatrix(camera.combined);
-            batch.draw(Assets.testTexture, 0, 0, 1, 1);
+            for (BaseGameObject obj : gameObjects){
+                obj.render(batch);
+            }
             batch.end();
 
             // Draw user interface stuff
