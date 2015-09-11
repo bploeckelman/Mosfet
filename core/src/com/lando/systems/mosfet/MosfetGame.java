@@ -1,27 +1,29 @@
 package com.lando.systems.mosfet;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.lando.systems.mosfet.screens.PrototypeScreen;
+import com.lando.systems.mosfet.utils.Assets;
 
-public class MosfetGame extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	
+public class MosfetGame extends Game {
+
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+		Assets.load();
+		setScreen(new PrototypeScreen(this));
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+		float delta = Gdx.graphics.getDeltaTime();
+		delta = Math.min(delta, 1 / 30f);
+		Assets.tween.update(delta);
+		super.render();
 	}
+
+	@Override
+	public void dispose() {
+		Assets.dispose();
+	}
+
 }
