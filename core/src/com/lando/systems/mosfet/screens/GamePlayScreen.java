@@ -1,6 +1,7 @@
 package com.lando.systems.mosfet.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -9,17 +10,22 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.BaseGameObject;
+import com.lando.systems.mosfet.gameobjects.Player;
 import com.lando.systems.mosfet.utils.Assets;
+
 
 /**
  * Brian Ploeckelman created on 9/10/2015.
  */
 public class GamePlayScreen extends GameScreen {
+
+    final float             MOVE_DELAY = .1f; // TODO make this match the animation tween
 
     FrameBuffer             sceneFrameBuffer;
     TextureRegion           sceneRegion;
@@ -27,6 +33,8 @@ public class GamePlayScreen extends GameScreen {
     int                     levelHeight;
     int                     levelWidth;
     Array<BaseGameObject>   gameObjects;
+    Player                  player;
+    float                   movementDelay;
 
     public GamePlayScreen(MosfetGame game) {
         super(game);
@@ -66,15 +74,45 @@ public class GamePlayScreen extends GameScreen {
             }
         }
 
+        // TODO; load this in
+        player = new Player(new Vector2(3, 3));
+        gameObjects.add(player);
 
         sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, false);
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
         sceneRegion.flip(false, true);
+        movementDelay = 0;
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
+        movementDelay -= delta;
+        if (movementDelay <= 0){
+            // TODO also handle click on button in UI
+            if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+                for (BaseGameObject obj : gameObjects){
+                    obj.move(true);
+                }
+                movementDelay = MOVE_DELAY;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+                for (BaseGameObject obj : gameObjects){
+                    obj.move(false);
+                }
+                movementDelay = MOVE_DELAY;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.A) || Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
+                for (BaseGameObject obj : gameObjects){
+                    obj.rotate(false);
+                }
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.D) || Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
+                for (BaseGameObject obj : gameObjects){
+                    obj.rotate(true);
+                }
+            }
+        }
     }
 
     @Override

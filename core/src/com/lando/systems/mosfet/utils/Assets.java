@@ -31,6 +31,7 @@ public class Assets {
 
     public static Texture testTexture;
     public static Texture circleTexture;
+    public static Texture stoneTexture;
 
     public static void load() {
         if (tween == null) {
@@ -49,6 +50,7 @@ public class Assets {
 
         testTexture = new Texture("badlogic.jpg");
         circleTexture = new Texture("circle.png");
+        stoneTexture = new Texture("stone.png");
     }
 
     public static void dispose() {
