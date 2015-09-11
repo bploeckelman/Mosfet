@@ -24,7 +24,6 @@ import com.lando.systems.mosfet.world.Level;
  */
 public class GamePlayScreen extends GameScreen {
 
-    final float             MOVE_DELAY = .1f; // TODO make this match the animation tween
 
     FrameBuffer             sceneFrameBuffer;
     TextureRegion           sceneRegion;
@@ -112,7 +111,7 @@ public class GamePlayScreen extends GameScreen {
                 }
                 resolveCollisions();
                 processInteractions();
-                movementDelay = MOVE_DELAY;
+                movementDelay = Assets.MOVE_DELAY;
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
                 for (BaseGameObject obj : gameObjects){
@@ -120,7 +119,7 @@ public class GamePlayScreen extends GameScreen {
                 }
                 resolveCollisions();
                 processInteractions();
-                movementDelay = MOVE_DELAY;
+                movementDelay = Assets.MOVE_DELAY;
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.A) || Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
                 for (BaseGameObject obj : gameObjects){
@@ -204,7 +203,6 @@ public class GamePlayScreen extends GameScreen {
                         obj.conflict = false;
                     }
                 }
-                continue;
             }
         }
     }

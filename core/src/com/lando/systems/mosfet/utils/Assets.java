@@ -24,6 +24,8 @@ import com.lando.systems.mosfet.utils.accessors.*;
  */
 public class Assets {
 
+    public static final float MOVE_DELAY = .5f;
+
     public static TweenManager tween;
     public static SpriteBatch  batch;
     public static BitmapFont   font;
@@ -41,6 +43,7 @@ public class Assets {
     public static TextureRegion spawnRegion;
     public static TextureRegion wallRegion;
     public static TextureRegion exitRegion;
+
 
     public static void load() {
         if (tween == null) {
