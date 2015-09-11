@@ -12,8 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
-import com.lando.systems.mosfet.gameobjects.BaseGameObject;
-import com.lando.systems.mosfet.gameobjects.Player;
+import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.world.Level;
 
@@ -67,13 +66,21 @@ public class GamePlayScreen extends GameScreen {
         gameObjects = new Array<BaseGameObject>();
         for (int y = 0; y < levelHeight; y++){
             for (int x = 0; x < levelWidth; x++){
-                gameObjects.add(new BaseGameObject(new Vector2(x, y)));
+                gameObjects.add(new Floor(new Vector2(x, y)));
             }
         }
 
         // TODO; load this in
         player = new Player(new Vector2(3, 3));
         gameObjects.add(player);
+        for (int y = 0; y < levelHeight; y++){
+            gameObjects.add(new Wall(new Vector2(0, y)));
+            gameObjects.add(new Wall(new Vector2(levelWidth -1, y)));
+        }
+        for (int x = 0; x < levelWidth; x++){
+            gameObjects.add(new Wall(new Vector2(x, 0)));
+            gameObjects.add(new Wall(new Vector2(x, levelHeight -1)));
+        }
 
         sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, false);
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
@@ -97,12 +104,16 @@ public class GamePlayScreen extends GameScreen {
                 for (BaseGameObject obj : gameObjects){
                     obj.move(true);
                 }
+                resolveCollisions();
+                processInteractions();
                 movementDelay = MOVE_DELAY;
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
                 for (BaseGameObject obj : gameObjects){
                     obj.move(false);
                 }
+                resolveCollisions();
+                processInteractions();
                 movementDelay = MOVE_DELAY;
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.A) || Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
@@ -162,6 +173,41 @@ public class GamePlayScreen extends GameScreen {
     // ------------------------------------------------------------------------
     // Private Implementation
     // ------------------------------------------------------------------------
+
+    private void resolveCollisions(){
+        boolean isValid = false;
+        while (!isValid) {
+            isValid = true;
+            for (int i = 0; i < gameObjects.size; i++) {
+                BaseGameObject objA = gameObjects.get(i);
+                if (objA.stationary) continue; // It didn't move no need to check
+                for (int j = 0; j < gameObjects.size; j++) {
+                    BaseGameObject objB = gameObjects.get(j);
+                    if (objA == objB) continue; // Don't check self
+                    if (objA.collides(objB)) {
+                        isValid = false;
+                        objA.conflict = true;
+                        objB.conflict = true;
+                    }
+                }
+            }
+            if (!isValid){
+                for (BaseGameObject obj : gameObjects)
+                {
+                    if (obj.conflict)
+                    {
+                        obj.revert();
+                        obj.conflict = false;
+                    }
+                }
+                continue;
+            }
+        }
+    }
+
+    private void processInteractions(){
+
+    }
 
     @Override
     protected void enableInput() {

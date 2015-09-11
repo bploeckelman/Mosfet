@@ -12,18 +12,24 @@ public class BaseGameObject {
     public enum DIR {UP, DOWN, LEFT, RIGHT}
 
     public Vector2 pos;
+    public Vector2 oldPos;
     public Vector2 targetPos;
     public TextureRegion tex;
     public DIR direction;
     public boolean stationary;
+    public boolean walkable;
+    public boolean conflict;
 
 
     public BaseGameObject(Vector2 p){
         tex = new TextureRegion(Assets.stoneTexture);
         pos = p;
+        oldPos = p.cpy();
         targetPos = p.cpy();
         direction = DIR.UP;
         stationary = true;
+        walkable = false;
+        conflict = false;
     }
 
     public void update(float dt){
@@ -36,6 +42,7 @@ public class BaseGameObject {
 
     public void move(boolean forward){
         if (stationary) return;
+        oldPos = pos.cpy();
         switch (direction){
             case UP:
                 targetPos.y = forward ? pos.y + 1 : pos.y -1;
@@ -70,5 +77,16 @@ public class BaseGameObject {
                 direction = clockwise ? DIR.UP : DIR.DOWN;
                 break;
         }
+    }
+
+    public boolean collides(BaseGameObject other){
+        if (other.walkable) return false;
+        if (targetPos.x == other.targetPos.x && targetPos.y == other.targetPos.y) return true;
+        return false;
+    }
+
+    public void revert(){
+        pos = oldPos;
+        targetPos = oldPos;
     }
 }
