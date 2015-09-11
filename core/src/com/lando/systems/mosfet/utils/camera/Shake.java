@@ -1,4 +1,4 @@
-package com.lando.systems.mosfet.utils;
+package com.lando.systems.mosfet.utils.camera;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.MathUtils;

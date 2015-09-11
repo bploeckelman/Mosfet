@@ -3,18 +3,17 @@ package com.lando.systems.mosfet.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.BaseGameObject;
 import com.lando.systems.mosfet.utils.Assets;
+import com.lando.systems.mosfet.world.Level;
 
 /**
  * Brian Ploeckelman created on 9/10/2015.
@@ -23,20 +22,20 @@ public class GamePlayScreen extends GameScreen {
 
     FrameBuffer             sceneFrameBuffer;
     TextureRegion           sceneRegion;
-
-    int                     levelHeight;
-    int                     levelWidth;
+    Level                   level;
     Array<BaseGameObject>   gameObjects;
 
-    public GamePlayScreen(MosfetGame game) {
+    public GamePlayScreen(MosfetGame game, Level level) {
         super(game);
 
-        // TODO pass level information into here.
+        if (level == null) {
+            throw new GdxRuntimeException("GamePlayScreen requires a valid level");
+        }
+        this.level = level;
+        int levelWidth = level.getWidth();
+        int levelHeight = level.getHeight();
 
         Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
-
-        levelHeight = 20;
-        levelWidth = 15;
 
         // Show a tile portion of the map
         float aspect = Config.width/(float)Config.height;
@@ -89,6 +88,7 @@ public class GamePlayScreen extends GameScreen {
 
             batch.begin();
             batch.setProjectionMatrix(camera.combined);
+            level.render(batch);
             for (BaseGameObject obj : gameObjects){
                 obj.render(batch);
             }

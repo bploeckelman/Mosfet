@@ -10,11 +10,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.utils.accessors.*;
 
 /**
@@ -31,6 +33,9 @@ public class Assets {
 
     public static Texture testTexture;
     public static Texture circleTexture;
+    public static Texture spritesheetTexture;
+
+    public static TextureRegion[][] spriteRegions;
 
     public static void load() {
         if (tween == null) {
@@ -49,6 +54,9 @@ public class Assets {
 
         testTexture = new Texture("badlogic.jpg");
         circleTexture = new Texture("circle.png");
+        spritesheetTexture = new Texture("spritesheet.png");
+
+        spriteRegions = TextureRegion.split(spritesheetTexture, Config.tileSize, Config.tileSize);
     }
 
     public static void dispose() {
@@ -56,6 +64,7 @@ public class Assets {
         font.dispose();
         testTexture.dispose();
         circleTexture.dispose();
+        spritesheetTexture.dispose();
     }
 
     private static ShaderProgram compileShaderProgram(FileHandle vertSource, FileHandle fragSource) {
