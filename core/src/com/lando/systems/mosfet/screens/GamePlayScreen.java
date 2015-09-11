@@ -12,10 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
-import com.lando.systems.mosfet.gameobjects.BaseGameObject;
-import com.lando.systems.mosfet.gameobjects.Floor;
-import com.lando.systems.mosfet.gameobjects.Player;
-import com.lando.systems.mosfet.gameobjects.Wall;
+import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.world.Level;
 
@@ -74,9 +71,9 @@ public class GamePlayScreen extends GameScreen {
                 int value = level.getCellAt(x, y);
                 switch (value) {
                     case 0: gameObjects.add(new Floor(new Vector2(x, y))); break;
-                    case 1: /* spawn */ break;
+                    case 1: gameObjects.add(new Spawn(new Vector2(x, y))); break;
                     case 2: gameObjects.add(new Wall(new Vector2(x, y))); break;
-                    case 3: /* exit */ break;
+                    case 3: gameObjects.add(new Exit((new Vector2(x, y)))); break;
                 }
             }
         }

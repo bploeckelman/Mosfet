@@ -68,7 +68,7 @@ public class Assets {
         spriteRegions = TextureRegion.split(spritesheetTexture, Config.tileSize, Config.tileSize);
         blankRegion = spriteRegions[7][7];
         spawnRegion = spriteRegions[0][0];
-        wallRegion = new TextureRegion(stoneTexture);
+        wallRegion = spriteRegions[0][1];
         exitRegion = spriteRegions[0][2];
     }
 
