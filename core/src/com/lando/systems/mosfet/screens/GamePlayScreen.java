@@ -12,7 +12,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
-import com.lando.systems.mosfet.gameobjects.*;
+import com.lando.systems.mosfet.gameobjects.BaseGameObject;
+import com.lando.systems.mosfet.gameobjects.Floor;
+import com.lando.systems.mosfet.gameobjects.Player;
+import com.lando.systems.mosfet.gameobjects.Wall;
 import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.world.Level;
 
@@ -42,7 +45,7 @@ public class GamePlayScreen extends GameScreen {
 
         Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
 
-        // Show a tile portion of the map
+        // Fit the map while maintaining the crrect aspect ratio
         float aspect = Config.width/(float)Config.height;
         float levelAspect = levelWidth/ (float)levelHeight;
         float cameraWidth;
@@ -63,24 +66,27 @@ public class GamePlayScreen extends GameScreen {
         camera.translate(cameraOffset);
         camera.update();
 
+        // Create game objects
         gameObjects = new Array<BaseGameObject>();
-        for (int y = 0; y < levelHeight; y++){
-            for (int x = 0; x < levelWidth; x++){
-                gameObjects.add(new Floor(new Vector2(x, y)));
+
+        // Populate game objects based on map layout
+        for (int y = 0; y < level.getHeight(); ++y) {
+            for (int x = 0; x < level.getWidth(); ++x) {
+                int value = level.getCellAt(x, y);
+                switch (value) {
+                    case 0: gameObjects.add(new Floor(new Vector2(x, y))); break;
+                    case 1: /* spawn */ break;
+                    case 2: gameObjects.add(new Wall(new Vector2(x, y))); break;
+                    case 3: /* exit */ break;
+                }
             }
         }
 
-        // TODO; load this in
-        player = new Player(new Vector2(3, 3));
+        // Instantiate player
+        int px = level.getSpawnCellIndex() % level.getWidth();
+        int py = level.getSpawnCellIndex() / level.getWidth();
+        player = new Player(new Vector2(px, py));
         gameObjects.add(player);
-        for (int y = 0; y < levelHeight; y++){
-            gameObjects.add(new Wall(new Vector2(0, y)));
-            gameObjects.add(new Wall(new Vector2(levelWidth -1, y)));
-        }
-        for (int x = 0; x < levelWidth; x++){
-            gameObjects.add(new Wall(new Vector2(x, 0)));
-            gameObjects.add(new Wall(new Vector2(x, levelHeight -1)));
-        }
 
         sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, false);
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
@@ -140,7 +146,6 @@ public class GamePlayScreen extends GameScreen {
             // Draw the world
             batch.begin();
             batch.setProjectionMatrix(camera.combined);
-            level.render(batch, true);
             for (BaseGameObject obj : gameObjects){
                 obj.render(batch);
             }
