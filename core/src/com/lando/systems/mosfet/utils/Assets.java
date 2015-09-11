@@ -37,6 +37,10 @@ public class Assets {
     public static Texture spritesheetTexture;
 
     public static TextureRegion[][] spriteRegions;
+    public static TextureRegion blankRegion;
+    public static TextureRegion spawnRegion;
+    public static TextureRegion wallRegion;
+    public static TextureRegion exitRegion;
 
     public static void load() {
         if (tween == null) {
@@ -55,10 +59,14 @@ public class Assets {
 
         testTexture = new Texture("badlogic.jpg");
         circleTexture = new Texture("circle.png");
+        stoneTexture = new Texture("stone.png");
         spritesheetTexture = new Texture("spritesheet.png");
 
         spriteRegions = TextureRegion.split(spritesheetTexture, Config.tileSize, Config.tileSize);
-        stoneTexture = new Texture("stone.png");
+        blankRegion = spriteRegions[7][7];
+        spawnRegion = spriteRegions[0][0];
+        wallRegion = spriteRegions[0][1];
+        exitRegion = spriteRegions[0][2];
     }
 
     public static void dispose() {

@@ -2,6 +2,7 @@ package com.lando.systems.mosfet.utils.camera;
 
 import com.badlogic.gdx.InputAdapter;
 import com.lando.systems.mosfet.screens.LevelEditorScreen;
+import com.lando.systems.mosfet.world.Entity;
 import com.lando.systems.mosfet.world.Level;
 
 /**

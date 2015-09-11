@@ -3,6 +3,7 @@ package com.lando.systems.mosfet.world;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.lando.systems.mosfet.Config;
+import com.lando.systems.mosfet.utils.Assets;
 
 import java.util.Arrays;
 

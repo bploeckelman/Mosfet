@@ -22,6 +22,7 @@ import com.lando.systems.mosfet.utils.ui.InfoDialog;
 import com.lando.systems.mosfet.utils.ui.editor.LoadLevelDialog;
 import com.lando.systems.mosfet.utils.ui.editor.NewLevelDialog;
 import com.lando.systems.mosfet.utils.ui.editor.SaveLevelDialog;
+import com.lando.systems.mosfet.world.Entity;
 import com.lando.systems.mosfet.world.Level;
 
 /**
@@ -209,9 +210,7 @@ public class LevelEditorScreen extends GameScreen {
                     return;
                 }
 
-                PrototypeScreen gameScreen = new PrototypeScreen(game);
-                gameScreen.setLevel(level);
-                game.setScreen(gameScreen);
+                game.setScreen(new GamePlayScreen(game, level));
             }
         });
 
