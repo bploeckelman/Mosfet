@@ -1,7 +1,5 @@
 package com.lando.systems.mosfet.utils.ui.editor;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -12,8 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.lando.systems.mosfet.screens.LevelEditorScreen;
+import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.ui.ButtonInputListenerAdapter;
 import com.lando.systems.mosfet.world.Level;
+
+import java.util.Map;
 
 /**
  * Brian Ploeckelman created on 8/11/2015.
@@ -46,23 +47,29 @@ public class LoadLevelDialog extends Dialog {
     protected void initLayout() {
         final LoadLevelDialog dlg = this;
 
-        FileHandle levelsDir = Gdx.files.local("levels");
-        Array<FileHandle> levelFiles = new Array<FileHandle>();
-        levelFiles.add(levelsDir);
-        levelFiles.addAll(levelsDir.list());
+        // Can't use filesystem the same way in GWT so read from shared prefs instead
+        final Array<String> levelFiles = new Array<String>();
+        levelFiles.add("...");
 
-        final SelectBox<FileHandle> fileSelect = new SelectBox<FileHandle>(this.getSkin());
+        final Map<String, ?> prefsMap = Assets.prefs.get();
+        for (String key : prefsMap.keySet()) {
+            if (key.startsWith("levels/")) {
+                levelFiles.add(key);
+            }
+        }
+
+        final SelectBox<String> fileSelect = new SelectBox<String>(this.getSkin());
         fileSelect.setItems(levelFiles);
         fileSelect.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                final FileHandle selectedFile = fileSelect.getSelected();
-                final String input = selectedFile.readString();
+                final String selectedFile = fileSelect.getSelected();
+                final String input = Assets.prefs.getString(selectedFile);
                 final Json json = new Json();
                 final Level level = json.fromJson(Level.class, input);
                 if (level == null) {
                     levelEditorScreen.getInfoDialog().resetText(
-                            "Unable to load level from file: " + selectedFile.path(),
+                            "Unable to load level from file: " + selectedFile,
                             levelEditorScreen.getStage());
                     dlg.hide();
                     return;
@@ -70,11 +77,41 @@ public class LoadLevelDialog extends Dialog {
 
                 levelEditorScreen.setLevel(level);
                 levelEditorScreen.getInfoDialog().resetText(
-                        "Loaded level from file: " + selectedFile.path(),
+                        "Loaded level from file: " + selectedFile,
                         levelEditorScreen.getStage());
                 dlg.hide();
             }
         });
+
+//        FileHandle levelsDir = Gdx.files.local("levels");
+//        Array<FileHandle> levelFiles = new Array<FileHandle>();
+//        levelFiles.add(levelsDir);
+//        levelFiles.addAll(levelsDir.list());
+//
+//        final SelectBox<FileHandle> fileSelect = new SelectBox<FileHandle>(this.getSkin());
+//        fileSelect.setItems(levelFiles);
+//        fileSelect.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                final FileHandle selectedFile = fileSelect.getSelected();
+//                final String input = selectedFile.readString();
+//                final Json json = new Json();
+//                final Level level = json.fromJson(Level.class, input);
+//                if (level == null) {
+//                    levelEditorScreen.getInfoDialog().resetText(
+//                            "Unable to load level from file: " + selectedFile.path(),
+//                            levelEditorScreen.getStage());
+//                    dlg.hide();
+//                    return;
+//                }
+//
+//                levelEditorScreen.setLevel(level);
+//                levelEditorScreen.getInfoDialog().resetText(
+//                        "Loaded level from file: " + selectedFile.path(),
+//                        levelEditorScreen.getStage());
+//                dlg.hide();
+//            }
+//        });
 
         final TextButton cancelButton = new TextButton("Cancel", this.getSkin());
         cancelButton.addListener(new ButtonInputListenerAdapter() {

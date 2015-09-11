@@ -84,6 +84,12 @@ public class GamePlayScreen extends GameScreen {
     @Override
     public void update(float delta) {
         super.update(delta);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+            LevelEditorScreen levelEditorScreen = new LevelEditorScreen(game);
+            levelEditorScreen.setLevel(level);
+            game.setScreen(levelEditorScreen);
+        }
+
         movementDelay -= delta;
         if (movementDelay <= 0){
             // TODO also handle click on button in UI

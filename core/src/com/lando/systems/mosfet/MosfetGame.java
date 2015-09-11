@@ -2,16 +2,15 @@ package com.lando.systems.mosfet;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.lando.systems.mosfet.screens.GamePlayScreen;
+import com.lando.systems.mosfet.screens.LevelEditorScreen;
 import com.lando.systems.mosfet.utils.Assets;
-import com.lando.systems.mosfet.world.Level;
 
 public class MosfetGame extends Game {
 
 	@Override
 	public void create () {
 		Assets.load();
-		setScreen(new GamePlayScreen(this, new Level(15, 20)));
+		setScreen(new LevelEditorScreen(this));
 	}
 
 	@Override

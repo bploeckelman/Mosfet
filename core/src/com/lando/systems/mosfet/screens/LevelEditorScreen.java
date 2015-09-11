@@ -214,10 +214,11 @@ public class LevelEditorScreen extends GameScreen {
             }
         });
 
-        window.top().left().add("Entity Type").padRight(15f);
+//        window.top().left().add("Entity Type").padRight(15f);
+        window.top().left().add(playButton).padRight(15f).fillX().expandX();
         window.top().left().add(entityTypeSelect).width(100f).padRight(15f);
         window.top().left().add(removalModeCheckBox).padRight(15f);
-        window.top().left().add(playButton).padRight(15f).fillX().expandX();
+//        window.top().left().add(playButton).padRight(15f).fillX().expandX();
         window.top().right().add("Level:").padRight(15f);
         window.top().right().add(newLevelBtn);
         window.top().right().add(saveLevelBtn);

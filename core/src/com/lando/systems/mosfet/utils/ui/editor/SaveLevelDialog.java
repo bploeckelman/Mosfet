@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Json;
 import com.lando.systems.mosfet.screens.LevelEditorScreen;
+import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.ui.ButtonInputListenerAdapter;
 import com.lando.systems.mosfet.world.Level;
 
@@ -77,20 +78,24 @@ public class SaveLevelDialog extends Dialog {
                 String output = json.toJson(level, Level.class);
                 //Gdx.app.log("json", json.prettyPrint(output));
 
+                // Can't write to filesystem in HTML build, so use shared prefs instead
+                Assets.prefs.putString("levels/" + nameStr, output);
+                Assets.prefs.flush();
+
                 // Write serialized JSON as nameStr text file
-                FileHandle file = Gdx.files.local("levels/" + nameStr);
-                try {
-                    boolean exists = file.exists();
-                    if (!exists) {
-                        exists = file.file().createNewFile();
-                    }
-                    if (!exists) {
-                        throw new IOException("Unable to create file: levels/" + nameStr);
-                    }
-                    file.writeString(output, false);
-                } catch (IOException e) {
-                    levelEditorScreen.getInfoDialog().resetText(e.getMessage(), levelEditorScreen.getStage());
-                }
+//                FileHandle file = Gdx.files.local("levels/" + nameStr);
+//                try {
+//                    boolean exists = file.exists();
+//                    if (!exists) {
+//                        exists = file.file().createNewFile();
+//                    }
+//                    if (!exists) {
+//                        throw new IOException("Unable to create file: levels/" + nameStr);
+//                    }
+//                    file.writeString(output, false);
+//                } catch (IOException e) {
+//                    levelEditorScreen.getInfoDialog().resetText(e.getMessage(), levelEditorScreen.getStage());
+//                }
 
                 levelEditorScreen.getInfoDialog().resetText("Level saved as: levels/" + nameStr, levelEditorScreen.getStage());
             }
