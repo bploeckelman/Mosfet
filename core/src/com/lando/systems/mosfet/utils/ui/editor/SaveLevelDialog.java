@@ -1,7 +1,7 @@
 package com.lando.systems.mosfet.utils.ui.editor;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -12,8 +12,6 @@ import com.lando.systems.mosfet.screens.LevelEditorScreen;
 import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.ui.ButtonInputListenerAdapter;
 import com.lando.systems.mosfet.world.Level;
-
-import java.io.IOException;
 
 /**
  * Brian Ploeckelman created on 8/11/2015.
@@ -54,8 +52,8 @@ public class SaveLevelDialog extends Dialog {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 // Fetch and validate the name to save the level as
-                String nameStr = nameField.getText();
-                if (nameStr == null || nameStr.isEmpty()) {
+                String levelName = nameField.getText();
+                if (levelName == null || levelName.isEmpty()) {
                     levelEditorScreen.getInfoDialog().resetText(
                             "Unable to save level\nInvalid name",
                             levelEditorScreen.getStage());
@@ -75,29 +73,18 @@ public class SaveLevelDialog extends Dialog {
 
                 // Serialize level as JSON
                 Json json = new Json();
-                String output = json.toJson(level, Level.class);
-                //Gdx.app.log("json", json.prettyPrint(output));
+                String levelData = json.prettyPrint(json.toJson(level, Level.class));
 
                 // Can't write to filesystem in HTML build, so use shared prefs instead
-                Assets.prefs.putString("levels/" + nameStr, output);
+                Assets.prefs.putString("levels/" + levelName, levelData);
                 Assets.prefs.flush();
 
-                // Write serialized JSON as nameStr text file
-//                FileHandle file = Gdx.files.local("levels/" + nameStr);
-//                try {
-//                    boolean exists = file.exists();
-//                    if (!exists) {
-//                        exists = file.file().createNewFile();
-//                    }
-//                    if (!exists) {
-//                        throw new IOException("Unable to create file: levels/" + nameStr);
-//                    }
-//                    file.writeString(output, false);
-//                } catch (IOException e) {
-//                    levelEditorScreen.getInfoDialog().resetText(e.getMessage(), levelEditorScreen.getStage());
-//                }
+                // Write out to the file system too, if we are on desktop
+                if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+                    Gdx.files.local("levels/" + levelName).writeString(levelData, false);
+                }
 
-                levelEditorScreen.getInfoDialog().resetText("Level saved as: levels/" + nameStr, levelEditorScreen.getStage());
+                levelEditorScreen.getInfoDialog().resetText("Level saved as: levels/" + levelName, levelEditorScreen.getStage());
             }
         });
         cancelButton.addListener(new ButtonInputListenerAdapter() {
