@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.utils.Assets;
 
-import java.util.Arrays;
-
 /**
  * Brian Ploeckelman created on 8/10/2015.
  */
@@ -31,7 +29,6 @@ public class Level {
         this.height = height;
         numCells = width * height;
         cells = new int[numCells];
-        Arrays.fill(cells, 0);
         hasSpawn = false;
         hasExit = false;
     }
