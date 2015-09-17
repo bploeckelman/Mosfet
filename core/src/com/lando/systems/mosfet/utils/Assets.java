@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -28,6 +29,7 @@ public class Assets {
 
     public static TweenManager tween;
     public static SpriteBatch  batch;
+    public static ModelBatch   modelBatch;
     public static BitmapFont   font;
 
     private static final String PREFS_FILE = "mostfet-prefs";
@@ -39,10 +41,10 @@ public class Assets {
     public static Texture spritesheetTexture;
 
     public static TextureRegion[][] spriteRegions;
-    public static TextureRegion blankRegion;
-    public static TextureRegion spawnRegion;
-    public static TextureRegion wallRegion;
-    public static TextureRegion exitRegion;
+    public static TextureRegion     blankRegion;
+    public static TextureRegion     spawnRegion;
+    public static TextureRegion     wallRegion;
+    public static TextureRegion     exitRegion;
 
 
     public static void load() {
@@ -56,6 +58,7 @@ public class Assets {
         }
 
         batch = new SpriteBatch();
+        modelBatch = new ModelBatch();
         font = new BitmapFont();
 
         prefs = Gdx.app.getPreferences(PREFS_FILE);
@@ -74,6 +77,7 @@ public class Assets {
 
     public static void dispose() {
         batch.dispose();
+        modelBatch.dispose();
         font.dispose();
         testTexture.dispose();
         circleTexture.dispose();
