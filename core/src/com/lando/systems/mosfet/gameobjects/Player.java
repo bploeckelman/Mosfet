@@ -1,5 +1,6 @@
 package com.lando.systems.mosfet.gameobjects;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.mosfet.utils.Assets;
@@ -14,5 +15,19 @@ public class Player extends BaseGameObject {
         stationary = false;
     }
 
+    @Override
+    public void render(SpriteBatch batch) {
+        batch.draw(tex, pos.x, pos.y, 0.5f, 0.5f, 1f, 1f, 1f, 1f, getRotationFromDir());
+    }
+
+    private float getRotationFromDir() {
+        switch (direction) {
+            case UP:    return 0f;
+            case DOWN:  return 180f;
+            case LEFT:  return 90f;
+            case RIGHT: return 270f;
+            default:    return 0f;
+        }
+    }
 
 }
