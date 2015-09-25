@@ -25,6 +25,8 @@ public class Teleport extends BaseGameObject {
 
     public void interactWith(BaseGameObject obj, GamePlayScreen screen){
         if (obj == null) return;
+        if (usedThisTurn) return;
+
 
         //TODO remove this?
         if (otherEnd == null) {

@@ -240,7 +240,7 @@ public class GamePlayScreen extends GameScreen {
         final int objectSize  = gameObjects.size;
         for (int i = 0; i < objectSize; i++){
             BaseGameObject obj = gameObjects.get(i);
-            if (!obj.interactable || obj.usedThisTurn) continue;
+            if (!obj.interactable) continue;
             obj.interactWith(getObjectAt(obj.pos), this);
 
         }
