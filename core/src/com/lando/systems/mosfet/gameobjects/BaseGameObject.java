@@ -178,7 +178,7 @@ public class BaseGameObject {
         return DIR.UP;
     }
 
-    private float getRotationFromDir() {
+    protected float getRotationFromDir() {
         switch (direction) {
             case UP:    return 0f;
             case DOWN:  return 180f;

@@ -177,6 +177,20 @@ public class GamePlayScreen extends GameScreen {
     // Accessors
     // ------------------------------------------------------------------------
 
+
+    public BaseGameObject getObjectAt(Vector2 pos){
+        final int objectSize  = gameObjects.size;
+        for (int i = 0; i < objectSize; i++){
+            BaseGameObject obj = gameObjects.get(i);
+            if (obj.walkable) continue;
+            if (obj.pos.x == pos.x && obj.pos.y == pos.y) return obj;
+        }
+        return null;
+    }
+
+    public void win(){
+        // TODO add logic to transition when you get to the exit
+    }
     // ------------------------------------------------------------------------
     // Private Implementation
     // ------------------------------------------------------------------------
@@ -192,7 +206,7 @@ public class GamePlayScreen extends GameScreen {
                 for (int j = 0; j < gameObjects.size; j++) {
                     BaseGameObject objB = gameObjects.get(j);
                     if (objA == objB) continue; // Don't check self
-                    if (objA.collides(objB)) {
+                    if (objA.collides(objB) || objA.passedThrough(objB)) {
                         isValid = false;
                         objA.conflict = true;
                         objB.conflict = true;
@@ -212,15 +226,6 @@ public class GamePlayScreen extends GameScreen {
         }
     }
 
-    public BaseGameObject getObjectAt(Vector2 pos){
-        final int objectSize  = gameObjects.size;
-        for (int i = 0; i < objectSize; i++){
-            BaseGameObject obj = gameObjects.get(i);
-            if (obj.walkable) continue;
-            if (obj.pos.x == pos.x && obj.pos.y == pos.y) return obj;
-        }
-        return null;
-    }
 
     private void processInteractions(){
         final int objectSize  = gameObjects.size;
