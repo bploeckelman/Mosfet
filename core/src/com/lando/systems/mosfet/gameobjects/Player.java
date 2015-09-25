@@ -62,4 +62,8 @@ public class Player extends BaseGameObject {
         }
     }
 
+    public void move(boolean forward){
+        moveDir(forward ? direction: invertDir(direction));
+    }
+
 }

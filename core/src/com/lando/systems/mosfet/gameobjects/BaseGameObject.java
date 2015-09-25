@@ -48,30 +48,33 @@ public class BaseGameObject {
     }
 
     public void move(boolean forward){
-        if (stationary) return;
+
+    }
+
+    public void moveDir(DIR d){
         oldPos = pos.cpy();
         tempPos = pos.cpy();
-        switch (direction){
+        switch (d){
             case UP:
-                targetPos.y = forward ? pos.y + 1 : pos.y -1;
-                tempPos.y = forward ? pos.y + .5f : pos.y -.5f;
+                targetPos.y = pos.y + 1;
+                tempPos.y = pos.y + .5f;
                 break;
             case RIGHT:
-                targetPos.x = forward ? pos.x + 1 : pos.x -1;
-                tempPos.x = forward ? pos.x + .5f : pos.x -.5f;
+                targetPos.x = pos.x + 1;
+                tempPos.x = pos.x + .5f;
                 break;
             case DOWN:
-                targetPos.y = forward ? pos.y - 1 : pos.y +1;
-                tempPos.y = forward ? pos.y - .5f : pos.y + .5f;
+                targetPos.y = pos.y - 1;
+                tempPos.y = pos.y - .5f;
                 break;
             case LEFT:
-                targetPos.x = forward ? pos.x - 1 : pos.x +1;
-                tempPos.x = forward ? pos.x - .5f : pos.x +.5f;
+                targetPos.x =pos.x - 1;
+                tempPos.x = pos.x - .5f;
                 break;
         }
         moveTween = Tween.to(pos, Vector2Accessor.XY, Assets.MOVE_DELAY)
-                    .target(targetPos.x, targetPos.y)
-                    .start(Assets.tween);
+                .target(targetPos.x, targetPos.y)
+                .start(Assets.tween);
     }
 
 
@@ -93,6 +96,14 @@ public class BaseGameObject {
         }
     }
 
+    public void bePushed(DIR dir){
+
+    }
+
+    public void bePulled(DIR dir){
+
+    }
+
     public boolean collides(BaseGameObject other){
         if (other.walkable) return false;
         if (targetPos.x == other.targetPos.x && targetPos.y == other.targetPos.y) return true;
@@ -108,5 +119,15 @@ public class BaseGameObject {
                         .target(oldPos.x, oldPos.y))
                 .start(Assets.tween);
         targetPos = oldPos.cpy();
+    }
+
+    public DIR invertDir(DIR d){
+        switch (d){
+            case UP: return DIR.DOWN;
+            case DOWN: return DIR.UP;
+            case LEFT: return DIR.RIGHT;
+            case RIGHT: return DIR.LEFT;
+        }
+        return DIR.UP;
     }
 }
