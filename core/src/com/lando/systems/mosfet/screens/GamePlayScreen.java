@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.lando.systems.mosfet.Config;
@@ -28,6 +30,10 @@ public class GamePlayScreen extends GameScreen {
     Array<BaseGameObject>   gameObjects;
     Player                  player;
     float                   movementDelay;
+    Rectangle               forwardButton;
+    Rectangle               backwardButton;
+    Rectangle               turnRightButton;
+    Rectangle               turnLeftButton;
 
     public GamePlayScreen(MosfetGame game, Level level) {
         super(game);
@@ -68,6 +74,12 @@ public class GamePlayScreen extends GameScreen {
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
         sceneRegion.flip(false, true);
         movementDelay = 0;
+
+        forwardButton = new Rectangle(uiCamera.viewportWidth - 125, 150, 50, 50);
+        backwardButton = new Rectangle(uiCamera.viewportWidth - 125, 50, 50, 50);
+        turnRightButton = new Rectangle(uiCamera.viewportWidth - 100, 100, 50, 50);
+        turnLeftButton = new Rectangle(uiCamera.viewportWidth - 150, 100, 50, 50);
+
     }
 
     private void resetLevel(){
@@ -121,8 +133,13 @@ public class GamePlayScreen extends GameScreen {
             for(BaseGameObject obj : gameObjects){
                 obj.setOldPos();
             }
-            // TODO also handle click on button in UI
-            if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+            Vector2 touchPoint = new Vector2(-100, -100);
+            if (Gdx.input.justTouched()) {
+                Vector3 touchPoint3 = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                uiCamera.unproject(touchPoint3);
+                touchPoint = new Vector2(touchPoint3.x, touchPoint3.y);
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP) || forwardButton.contains(touchPoint)){
                 for (BaseGameObject obj : gameObjects){
                     obj.move(true, this);
                 }
@@ -130,7 +147,7 @@ public class GamePlayScreen extends GameScreen {
                 processInteractions();
                 movementDelay = Assets.MOVE_DELAY;
             }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || backwardButton.contains(touchPoint)){
                 for (BaseGameObject obj : gameObjects){
                     obj.move(false, this);
                 }
@@ -138,13 +155,13 @@ public class GamePlayScreen extends GameScreen {
                 processInteractions();
                 movementDelay = Assets.MOVE_DELAY;
             }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.A) || Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.A) || Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || turnLeftButton.contains(touchPoint)){
                 for (BaseGameObject obj : gameObjects){
                     obj.rotate(false);
                 }
                 movementDelay = Assets.MOVE_DELAY;
             }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.D) || Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.D) || Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || turnRightButton.contains(touchPoint)){
                 for (BaseGameObject obj : gameObjects){
                     obj.rotate(true);
                 }
@@ -173,6 +190,12 @@ public class GamePlayScreen extends GameScreen {
             batch.begin();
             batch.setProjectionMatrix(uiCamera.combined);
             Assets.font.draw(batch, "This... is... MOSFET!", 10, uiCamera.viewportHeight - 10);
+
+            batch.draw(Assets.upArrow, forwardButton.x, forwardButton.y, forwardButton.width, forwardButton.height);
+            batch.draw(Assets.downArrow, backwardButton.x, backwardButton.y, backwardButton.width, backwardButton.height);
+            batch.draw(Assets.leftArrow, turnLeftButton.x, turnLeftButton.y, turnLeftButton.width, turnLeftButton.height);
+            batch.draw(Assets.rightArrow, turnRightButton.x, turnRightButton.y, turnRightButton.width, turnRightButton.height);
+
             batch.end();
         }
         sceneFrameBuffer.end();

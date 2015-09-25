@@ -39,6 +39,10 @@ public class Assets {
     public static Texture circleTexture;
     public static Texture stoneTexture;
     public static Texture spritesheetTexturePlaceholder;
+    public static Texture upArrow;
+    public static Texture downArrow;
+    public static Texture rightArrow;
+    public static Texture leftArrow;
 
     public static TextureRegion[][] spritePlaceholderRegions;
     public static TextureRegion     blankRegion;
@@ -76,6 +80,11 @@ public class Assets {
         testTexture = new Texture("badlogic.jpg");
         circleTexture = new Texture("circle.png");
         stoneTexture = new Texture("stone.png");
+
+        upArrow = new Texture("up-arrow.png");
+        downArrow = new Texture("down-arrow.png");
+        rightArrow = new Texture("right-arrow.png");
+        leftArrow = new Texture("left-arrow.png");
         spritesheetTexturePlaceholder = new Texture("spritesheet-placeholders.png");
 
         spritePlaceholderRegions = TextureRegion.split(spritesheetTexturePlaceholder, Config.tileSize, Config.tileSize);
