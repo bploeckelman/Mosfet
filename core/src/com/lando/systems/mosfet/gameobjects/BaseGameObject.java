@@ -151,7 +151,8 @@ public class BaseGameObject {
 
     public boolean passedThrough(BaseGameObject obj)
     {
-        return pos.x == obj.oldPos.x &&
+        if (obj.walkable) return false;
+        return  pos.x == obj.oldPos.x &&
                 pos.y == obj.oldPos.y &&
                 oldPos.x == obj.pos.x &&
                 oldPos.y == obj.pos.y;
