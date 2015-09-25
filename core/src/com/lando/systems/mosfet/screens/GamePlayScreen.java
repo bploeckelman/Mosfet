@@ -187,6 +187,7 @@ public class GamePlayScreen extends GameScreen {
             isValid = true;
             for (int i = 0; i < gameObjects.size; i++) {
                 BaseGameObject objA = gameObjects.get(i);
+                objA.usedThisTurn = false;
                 if (objA.stationary) continue; // It didn't move no need to check
                 for (int j = 0; j < gameObjects.size; j++) {
                     BaseGameObject objB = gameObjects.get(j);
@@ -225,8 +226,8 @@ public class GamePlayScreen extends GameScreen {
         final int objectSize  = gameObjects.size;
         for (int i = 0; i < objectSize; i++){
             BaseGameObject obj = gameObjects.get(i);
-            if (!obj.interactable) continue;
-            obj.interactWith(getObjectAt(obj.pos));
+            if (!obj.interactable || obj.usedThisTurn) continue;
+            obj.interactWith(getObjectAt(obj.pos), this);
 
         }
     }

@@ -7,6 +7,7 @@ import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.accessors.Vector2Accessor;
 
@@ -29,7 +30,7 @@ public class BaseGameObject {
     public BaseTween moveTween;
     MutableFloat rotationAngleDeg;
     public boolean interactable;
-
+    public boolean usedThisTurn;
 
 
 
@@ -133,8 +134,9 @@ public class BaseGameObject {
      * have the object get acted on
      *
      * @param obj if obj is null that means nothing is on it.
+     * @param screen
      */
-    public void interactWith(BaseGameObject obj){
+    public void interactWith(BaseGameObject obj, GamePlayScreen screen){
 
     }
 

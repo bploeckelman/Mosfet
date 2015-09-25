@@ -1,6 +1,7 @@
 package com.lando.systems.mosfet.gameobjects;
 
 import com.badlogic.gdx.math.Vector2;
+import com.lando.systems.mosfet.screens.GamePlayScreen;
 
 /**
  * Created by Doug on 9/24/2015.
@@ -12,7 +13,7 @@ public class Spinner extends BaseGameObject {
         interactable = true;
     }
 
-    public void interactWith(BaseGameObject other){
+    public void interactWith(BaseGameObject other, GamePlayScreen screen){
         if (other != null)
             other.rotate(true);
     }
