@@ -122,11 +122,13 @@ public class GamePlayScreen extends GameScreen {
                 for (BaseGameObject obj : gameObjects){
                     obj.rotate(false);
                 }
+                movementDelay = Assets.MOVE_DELAY;
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.D) || Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
                 for (BaseGameObject obj : gameObjects){
                     obj.rotate(true);
                 }
+                movementDelay = Assets.MOVE_DELAY;
             }
         }
     }

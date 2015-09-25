@@ -25,7 +25,7 @@ import com.lando.systems.mosfet.utils.accessors.*;
  */
 public class Assets {
 
-    public static final float MOVE_DELAY = .5f;
+    public static final float MOVE_DELAY = .25f;
 
     public static TweenManager tween;
     public static SpriteBatch  batch;
