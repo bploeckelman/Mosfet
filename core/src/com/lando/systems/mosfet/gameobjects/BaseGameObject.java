@@ -58,7 +58,7 @@ public class BaseGameObject {
     }
 
     public void render(SpriteBatch batch){
-        batch.draw(tex, renderPos.x, renderPos.y, 1, 1);
+        batch.draw(tex, renderPos.x, renderPos.y, 0.5f, 0.5f, 1f, 1f, 1f, 1f, rotationAngleDeg.floatValue());
     }
 
     public void move(boolean forward){

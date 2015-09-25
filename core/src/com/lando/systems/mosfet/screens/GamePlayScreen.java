@@ -87,7 +87,6 @@ public class GamePlayScreen extends GameScreen {
             }
         }
 
-
         // Instantiate player
         int px = level.getSpawnCellIndex() % level.getWidth();
         int py = level.getSpawnCellIndex() / level.getWidth();
