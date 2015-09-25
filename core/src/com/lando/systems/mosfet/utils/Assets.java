@@ -52,6 +52,9 @@ public class Assets {
     public static TextureRegion     blockerPullRegion;
     public static TextureRegion     playerRegion;
     public static TextureRegion     aiRegion;
+    public static TextureRegion     spinnerRegion;
+    public static TextureRegion     switchRegion;
+    public static TextureRegion     teleportRegion;
 
 
     public static void load() {
@@ -70,32 +73,35 @@ public class Assets {
 
         prefs = Gdx.app.getPreferences(PREFS_FILE);
 
-//        testTexture = new Texture("badlogic.jpg");
-//        circleTexture = new Texture("circle.png");
-//        stoneTexture = new Texture("stone.png");
+        testTexture = new Texture("badlogic.jpg");
+        circleTexture = new Texture("circle.png");
+        stoneTexture = new Texture("stone.png");
         spritesheetTexturePlaceholder = new Texture("spritesheet-placeholders.png");
 
         spritePlaceholderRegions = TextureRegion.split(spritesheetTexturePlaceholder, Config.tileSize, Config.tileSize);
-        blankRegion =               spritePlaceholderRegions[7][7];
-        spawnRegion =               spritePlaceholderRegions[0][0];
-        wallRegion =                spritePlaceholderRegions[0][1];
-        exitRegion =                spritePlaceholderRegions[0][2];
-        doorClosedRegion =          spritePlaceholderRegions[0][3];
-        doorOpenRegion =            spritePlaceholderRegions[0][4];
-        blockerPushPullRegion =     spritePlaceholderRegions[0][5];
-        blockerPushRegion =         spritePlaceholderRegions[0][6];
-        blockerPullRegion =         spritePlaceholderRegions[0][7];
-        playerRegion =              spritePlaceholderRegions[1][1];
-        aiRegion =                  spritePlaceholderRegions[1][0];
+        blankRegion           = spritePlaceholderRegions[7][7];
+        spawnRegion           = spritePlaceholderRegions[0][0];
+        wallRegion            = spritePlaceholderRegions[0][1];
+        exitRegion            = spritePlaceholderRegions[0][2];
+        doorClosedRegion      = spritePlaceholderRegions[0][3];
+        doorOpenRegion        = spritePlaceholderRegions[0][4];
+        blockerPushPullRegion = spritePlaceholderRegions[0][5];
+        blockerPushRegion     = spritePlaceholderRegions[0][6];
+        blockerPullRegion     = spritePlaceholderRegions[0][7];
+        playerRegion          = spritePlaceholderRegions[1][1];
+        aiRegion              = spritePlaceholderRegions[1][0];
+        spinnerRegion         = spritePlaceholderRegions[1][2];
+        switchRegion          = spritePlaceholderRegions[1][3];
+        teleportRegion        = spritePlaceholderRegions[1][4];
     }
 
     public static void dispose() {
         batch.dispose();
         modelBatch.dispose();
         font.dispose();
-//        testTexture.dispose();
-//        circleTexture.dispose();
-//        stoneTexture.dispose();
+        testTexture.dispose();
+        circleTexture.dispose();
+        stoneTexture.dispose();
         spritesheetTexturePlaceholder.dispose();
     }
 

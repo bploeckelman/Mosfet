@@ -74,15 +74,25 @@ public class GamePlayScreen extends GameScreen {
         // Create game objects
         gameObjects = new Array<BaseGameObject>();
 
+        final Vector2 pos = new Vector2();
+
         // Populate game objects based on map layout
         for (int y = 0; y < level.getHeight(); ++y) {
             for (int x = 0; x < level.getWidth(); ++x) {
+                pos.set(x, y);
                 int value = level.getCellAt(x, y);
                 switch (value) {
-                    case 0: gameObjects.add(new Floor(new Vector2(x, y))); break;
-                    case 1: gameObjects.add(new Spawn(new Vector2(x, y))); break;
-                    case 2: gameObjects.add(new Wall(new Vector2(x, y))); break;
-                    case 3: gameObjects.add(new Exit((new Vector2(x, y)))); break;
+                    case 0: gameObjects.add(new Floor(pos.cpy())); break;
+                    case 1: gameObjects.add(new Spawn(pos.cpy())); break;
+                    case 2: gameObjects.add(new Wall(pos.cpy())); break;
+                    case 3: gameObjects.add(new Exit((pos.cpy()))); break;
+                    case 4: gameObjects.add(new BlockerPull(pos.cpy())); break;
+                    case 5: gameObjects.add(new BlockerPush(pos.cpy())); break;
+                    case 6: gameObjects.add(new Door(pos.cpy())); break;
+                    case 7: gameObjects.add(new DumbRobot(pos.cpy())); break;
+                    case 8: gameObjects.add(new Spinner(pos.cpy())); break;
+                    case 9: gameObjects.add(new Switch(pos.cpy())); break;
+                    case 10: gameObjects.add(new Teleport(pos.cpy())); break;
                 }
             }
         }

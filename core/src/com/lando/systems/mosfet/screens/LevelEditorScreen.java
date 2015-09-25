@@ -13,13 +13,16 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
+import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.camera.LevelEditorController;
 import com.lando.systems.mosfet.utils.camera.OrthoCamController;
 import com.lando.systems.mosfet.utils.ui.ButtonInputListenerAdapter;
 import com.lando.systems.mosfet.utils.ui.InfoDialog;
+import com.lando.systems.mosfet.utils.ui.editor.EntityLinkDialog;
 import com.lando.systems.mosfet.utils.ui.editor.LoadLevelDialog;
 import com.lando.systems.mosfet.utils.ui.editor.NewLevelDialog;
 import com.lando.systems.mosfet.utils.ui.editor.SaveLevelDialog;
@@ -202,6 +205,14 @@ public class LevelEditorScreen extends GameScreen {
         entityTypeSelect.setSelected(Entity.Type.BLANK);
         selectedEntityType = Entity.Type.BLANK;
 
+        final TextButton entityLinkButton = new TextButton("Link", skin);
+        entityLinkButton.addListener(new ButtonInputListenerAdapter() {
+             @Override
+             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                 new EntityLinkDialog("Link Entities", skin, LevelEditorScreen.this).show(stage);
+             }
+        });
+
         TextButton playButton = new TextButton("Play!", skin);
         playButton.addListener(new ButtonInputListenerAdapter() {
             @Override
@@ -217,10 +228,9 @@ public class LevelEditorScreen extends GameScreen {
 
 //        window.top().left().add("Entity Type").padRight(15f);
         window.top().left().add(playButton).padRight(15f).fillX().expandX();
-        window.top().left().add(entityTypeSelect).width(100f).padRight(15f);
-        window.top().left().add(removalModeCheckBox).padRight(15f);
-//        window.top().left().add(playButton).padRight(15f).fillX().expandX();
-        window.top().right().add("Level:").padRight(15f);
+        window.top().left().add(entityTypeSelect).width(100f).fillX().padRight(5f);
+        window.top().left().add(entityLinkButton).fillX().padRight(15f);
+        window.top().right().add(removalModeCheckBox).padRight(15f);
         window.top().right().add(newLevelBtn);
         window.top().right().add(saveLevelBtn);
         window.top().right().add(loadLevelBtn);

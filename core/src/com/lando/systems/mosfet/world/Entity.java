@@ -1,6 +1,8 @@
 package com.lando.systems.mosfet.world;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
 
 /**
@@ -12,7 +14,14 @@ public class Entity {
         BLANK(0, Assets.blankRegion),
         SPAWN(1, Assets.spawnRegion),
         WALL(2, Assets.wallRegion),
-        EXIT(3, Assets.exitRegion);
+        EXIT(3, Assets.exitRegion),
+        BLOCKER_PULL(4, Assets.blockerPullRegion),
+        BLOCKER_PUSH(5, Assets.blockerPushRegion),
+        DOOR(6, Assets.doorClosedRegion),
+        DUMB_ROBOT(7, Assets.aiRegion),
+        SPINNER(8, Assets.spinnerRegion),
+        SWITCH(9, Assets.switchRegion),
+        TELEPORT(10, Assets.teleportRegion);
 
         private int           value;
         private TextureRegion region;
@@ -28,6 +37,23 @@ public class Entity {
 
         public TextureRegion getRegion() {
             return region;
+        }
+
+        public static TextureRegion getRegionForValue(int value) {
+            switch (value) {
+                case 0:  return Entity.Type.BLANK.getRegion();
+                case 1:  return Entity.Type.SPAWN.getRegion();
+                case 2:  return Entity.Type.WALL.getRegion();
+                case 3:  return Entity.Type.EXIT.getRegion();
+                case 4:  return Entity.Type.BLOCKER_PULL.getRegion();
+                case 5:  return Entity.Type.BLOCKER_PUSH.getRegion();
+                case 6:  return Entity.Type.DOOR.getRegion();
+                case 7:  return Entity.Type.DUMB_ROBOT.getRegion();
+                case 8:  return Entity.Type.SPINNER.getRegion();
+                case 9:  return Entity.Type.SWITCH.getRegion();
+                case 10: return Entity.Type.TELEPORT.getRegion();
+                default: return Entity.Type.BLANK.getRegion();
+            }
         }
     }
 

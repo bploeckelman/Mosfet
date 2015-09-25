@@ -86,16 +86,10 @@ public class Level {
     }
 
     public void render(SpriteBatch batch, boolean inGame) {
-        TextureRegion texture = Assets.blankRegion;
+        TextureRegion texture;
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                int value = getCellAt(x, y);
-                switch (value) {
-                    case 0: texture = Entity.Type.BLANK.getRegion(); break;
-                    case 1: texture = Entity.Type.SPAWN.getRegion(); break;
-                    case 2: texture = Entity.Type.WALL.getRegion(); break;
-                    case 3: texture = Entity.Type.EXIT.getRegion(); break;
-                }
+                texture = Entity.Type.getRegionForValue(getCellAt(x, y));
                 if (inGame) batch.draw(texture, x, y, 1, 1);
                 else        batch.draw(texture, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
             }
