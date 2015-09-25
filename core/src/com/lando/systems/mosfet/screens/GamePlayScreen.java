@@ -62,6 +62,15 @@ public class GamePlayScreen extends GameScreen {
         camera.translate(cameraOffset);
         camera.update();
 
+        resetLevel();
+
+        sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, false);
+        sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
+        sceneRegion.flip(false, true);
+        movementDelay = 0;
+    }
+
+    private void resetLevel(){
         // Create game objects
         gameObjects = new Array<BaseGameObject>();
 
@@ -84,11 +93,6 @@ public class GamePlayScreen extends GameScreen {
         int py = level.getSpawnCellIndex() / level.getWidth();
         player = new Player(new Vector2(px, py));
         gameObjects.add(player);
-
-        sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, false);
-        sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
-        sceneRegion.flip(false, true);
-        movementDelay = 0;
     }
 
     @Override

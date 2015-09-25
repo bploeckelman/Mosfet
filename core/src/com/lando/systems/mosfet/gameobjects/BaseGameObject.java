@@ -31,6 +31,8 @@ public class BaseGameObject {
     public boolean interactable;
 
 
+
+
     public BaseGameObject(Vector2 p){
         tex = new TextureRegion(Assets.stoneTexture);
         pos = p;
@@ -44,6 +46,10 @@ public class BaseGameObject {
         canRotate = false;
         rotationAngleDeg = new MutableFloat(getRotationFromDir());
         interactable = false;
+    }
+
+    public void linkObject(BaseGameObject obj){
+
     }
 
     public void update(float dt){
@@ -143,13 +149,10 @@ public class BaseGameObject {
 
     public boolean passedThrough(BaseGameObject obj)
     {
-        if (pos.x == obj.oldPos.x &&
+        return pos.x == obj.oldPos.x &&
                 pos.y == obj.oldPos.y &&
                 oldPos.x == obj.pos.x &&
-                oldPos.y == obj.pos.y)
-            return true;
-        else
-            return false;
+                oldPos.y == obj.pos.y;
     }
 
     public void revert(){
