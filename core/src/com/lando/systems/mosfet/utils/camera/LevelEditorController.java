@@ -24,7 +24,7 @@ public class LevelEditorController extends InputAdapter {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (levelEditorScreen.getLevel() != null && button == 0) {
+        if (button == 0) {
             leftButtonDown = true;
             int cellX = (int) (levelEditorScreen.getMouseWorldPos().x / Level.CELL_WIDTH);
             int cellY = (int) (levelEditorScreen.getMouseWorldPos().y / Level.CELL_HEIGHT);
@@ -64,16 +64,9 @@ public class LevelEditorController extends InputAdapter {
     // ------------------------------------------------------------------------
 
     private void updateLevelWithClickAt(int cellX, int cellY) {
-        int cellValue = levelEditorScreen.getSelectedEntityType().getValue();
-        if (levelEditorScreen.isRemovalMode()) {
-            levelEditorScreen.getLevel().setCellAt(cellX, cellY, Entity.Type.BLANK.getValue());
-        } else {
-            final Level level = levelEditorScreen.getLevel();
-            if (cellValue == Entity.Type.SPAWN.getValue() && level.hasSpawn()) {
-                level.setCellAt(level.getSpawnCellIndex(), Entity.Type.BLANK.getValue());
-            }
-            levelEditorScreen.getLevel().setCellAt(cellX, cellY, cellValue);
-        }
+        // TODO: spawn validation (during editing or on play/save?)
+        levelEditorScreen.setPropsAt(cellX, cellY, (levelEditorScreen.isEraseMode()) ?
+                                                   Entity.Type.BLANK : levelEditorScreen.getSelectedEntityType());
         lastCellClickedX = cellX;
         lastCellClickedY = cellY;
     }

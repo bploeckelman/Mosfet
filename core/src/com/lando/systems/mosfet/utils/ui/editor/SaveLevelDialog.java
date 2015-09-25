@@ -62,7 +62,7 @@ public class SaveLevelDialog extends Dialog {
                 }
 
                 // Fetch and validate the level to save
-                Level level = levelEditorScreen.getLevel();
+                final Level level = levelEditorScreen.generateLevel();
                 if (level == null) {
                     levelEditorScreen.getInfoDialog().resetText(
                             "Unable to save level\nNo level loaded",
@@ -72,8 +72,8 @@ public class SaveLevelDialog extends Dialog {
                 }
 
                 // Serialize level as JSON
-                Json json = new Json();
-                String levelData = json.prettyPrint(json.toJson(level, Level.class));
+                final Json json = new Json();
+                final String levelData = json.prettyPrint(json.toJson(level, Level.class));
 
                 // Can't write to filesystem in HTML build, so use shared prefs instead
                 Assets.prefs.putString("levels/" + levelName, levelData);

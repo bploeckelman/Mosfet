@@ -1,8 +1,6 @@
 package com.lando.systems.mosfet.world;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
 
 /**
@@ -53,6 +51,23 @@ public class Entity {
                 case 9:  return Entity.Type.SWITCH.getRegion();
                 case 10: return Entity.Type.TELEPORT.getRegion();
                 default: return Entity.Type.BLANK.getRegion();
+            }
+        }
+
+        public static Entity.Type getTypeForValue(int value) {
+            switch (value) {
+                case 0:  return Entity.Type.BLANK;
+                case 1:  return Entity.Type.SPAWN;
+                case 2:  return Entity.Type.WALL;
+                case 3:  return Entity.Type.EXIT;
+                case 4:  return Entity.Type.BLOCKER_PULL;
+                case 5:  return Entity.Type.BLOCKER_PUSH;
+                case 6:  return Entity.Type.DOOR;
+                case 7:  return Entity.Type.DUMB_ROBOT;
+                case 8:  return Entity.Type.SPINNER;
+                case 9:  return Entity.Type.SWITCH;
+                case 10: return Entity.Type.TELEPORT;
+                default: return Entity.Type.BLANK;
             }
         }
     }

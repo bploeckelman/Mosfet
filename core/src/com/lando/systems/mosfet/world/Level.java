@@ -2,8 +2,9 @@ package com.lando.systems.mosfet.world;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 import com.lando.systems.mosfet.Config;
-import com.lando.systems.mosfet.utils.Assets;
+import com.lando.systems.mosfet.gameobjects.GameObjectProps;
 
 /**
  * Brian Ploeckelman created on 8/10/2015.
@@ -25,12 +26,27 @@ public class Level {
     }
 
     public Level(int width, int height) {
-        this.width = width;
-        this.height = height;
-        numCells = width * height;
-        cells = new int[numCells];
-        hasSpawn = false;
-        hasExit = false;
+        this.width    = width;
+        this.height   = height;
+        this.numCells = width * height;
+        this.cells    = new int[numCells];
+        this.hasSpawn = false;
+        this.hasExit  = false;
+    }
+
+    public Level(int width, int height, Array<GameObjectProps> objectPropsArray) {
+        this.width    = width;
+        this.height   = height;
+        this.numCells = width * height;
+        this.cells    = new int[numCells];
+        this.hasSpawn = false;
+        this.hasExit  = false;
+
+        int i = 0;
+        for (GameObjectProps objectProps : objectPropsArray) {
+            cells[i] = objectProps.getBits();
+            ++i;
+        }
     }
 
     public int getCellAt(int x, int y) {
@@ -47,65 +63,17 @@ public class Level {
         return -1;
     }
 
-    public void setCellAt(int x, int y, int value) {
-        if (x < 0 || x >= width || y < 0 || y >= height) {
-            return;
-        }
-
-        int index = y * width + x;
-
-        if      (value == Entity.Type.SPAWN.getValue()) hasSpawn = true;
-        else if (value == Entity.Type.EXIT.getValue())  hasExit = true;
-        else {
-            int currentValue = cells[index];
-            if      (currentValue == Entity.Type.SPAWN.getValue()) hasSpawn = false;
-            else if (currentValue == Entity.Type.EXIT.getValue())  hasExit = false;
-        }
-
-        cells[index] = value;
-    }
-
-    public void setCellAt(int index, int value) {
-        if (index < 0 || index >= cells.length) {
-            return;
-        }
-
-        if      (value == Entity.Type.SPAWN.getValue()) hasSpawn = true;
-        else if (value == Entity.Type.EXIT.getValue())  hasExit = true;
-        else {
-            int currentValue = cells[index];
-            if      (currentValue == Entity.Type.SPAWN.getValue()) hasSpawn = false;
-            else if (currentValue == Entity.Type.EXIT.getValue())  hasExit = false;
-        }
-
-        cells[index] = value;
-    }
-
     public void render(SpriteBatch batch) {
-        render(batch, false);
-    }
-
-    public void render(SpriteBatch batch, boolean inGame) {
         TextureRegion texture;
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 texture = Entity.Type.getRegionForValue(getCellAt(x, y));
-                if (inGame) batch.draw(texture, x, y, 1, 1);
-                else        batch.draw(texture, x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+                batch.draw(texture, x, y, 1, 1);
             }
         }
     }
 
-    public boolean hasSpawn() {
-        return hasSpawn;
-    }
-
-    public boolean hasExit() {
-        return hasExit;
-    }
-
     public int getSpawnCellIndex() {
-        if (!hasSpawn) return -1;
         for (int i = 0; i < cells.length; ++i) {
             if (cells[i] == Entity.Type.SPAWN.getValue()) {
                 return i;
@@ -120,14 +88,6 @@ public class Level {
 
     public int getHeight() {
         return height;
-    }
-
-    public float getCellWidth() {
-        return CELL_WIDTH;
-    }
-
-    public float getCellHeight() {
-        return CELL_HEIGHT;
     }
 
 }
