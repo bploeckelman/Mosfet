@@ -96,6 +96,9 @@ public class GamePlayScreen extends GameScreen {
                 }
             }
         }
+        gameObjects.add(new DumbRobot(new Vector2(2,2)));
+        gameObjects.add(new Blocker(new Vector2(2,3)));
+
 
         // Instantiate player
         int px = level.getSpawnCellIndex() % level.getWidth();
@@ -115,10 +118,13 @@ public class GamePlayScreen extends GameScreen {
 
         movementDelay -= delta;
         if (movementDelay <= 0){
+            for(BaseGameObject obj : gameObjects){
+                obj.setOldPos();
+            }
             // TODO also handle click on button in UI
             if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP)){
                 for (BaseGameObject obj : gameObjects){
-                    obj.move(true);
+                    obj.move(true, this);
                 }
                 resolveCollisions();
                 processInteractions();
@@ -126,7 +132,7 @@ public class GamePlayScreen extends GameScreen {
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
                 for (BaseGameObject obj : gameObjects){
-                    obj.move(false);
+                    obj.move(false, this);
                 }
                 resolveCollisions();
                 processInteractions();

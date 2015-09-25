@@ -2,6 +2,7 @@ package com.lando.systems.mosfet.gameobjects;
 
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.math.Vector2;
+import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
 
 /**
@@ -22,7 +23,19 @@ public class DumbRobot extends BaseGameObject {
         tex = Assets.aiRegion;
     }
 
-    public void move(boolean forward){
+    public void move(boolean forward, GamePlayScreen screen){
+        if (forward){
+            BaseGameObject obj = screen.getObjectAt(getFront());
+            if (obj != null) obj.bePushed(direction);
+            obj = screen.getObjectAt(getBehind());
+            if (obj != null) obj.bePulled(direction);
+        } else {
+            BaseGameObject obj = screen.getObjectAt(getFront());
+            if (obj != null) obj.bePulled(invertDir(direction));
+            obj = screen.getObjectAt(getBehind());
+            if (obj != null) obj.bePushed(invertDir(direction));
+        }
         moveDir(forward ? direction : invertDir(direction));
+
     }
 }

@@ -11,4 +11,7 @@ public class BlockerPush extends Blocker {
         super(p);
         tex = Assets.blockerPushRegion;
     }
-}
+
+    public void bePulled(DIR dir){
+
+    }}

@@ -2,9 +2,9 @@ package com.lando.systems.mosfet.gameobjects;
 
 
 import aurelienribon.tweenengine.primitives.MutableFloat;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
 
 /**
@@ -28,7 +28,7 @@ public class Player extends BaseGameObject {
 
 
 
-    public void move(boolean forward){
+    public void move(boolean forward, GamePlayScreen screen){
         moveDir(forward ? direction: invertDir(direction));
     }
 

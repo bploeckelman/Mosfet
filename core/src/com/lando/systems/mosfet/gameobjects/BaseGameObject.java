@@ -61,12 +61,11 @@ public class BaseGameObject {
         batch.draw(tex, renderPos.x, renderPos.y, 0.5f, 0.5f, 1f, 1f, 1f, 1f, rotationAngleDeg.floatValue());
     }
 
-    public void move(boolean forward){
+    public void move(boolean forward, GamePlayScreen screen){
 
     }
 
     public void moveDir(DIR d){
-        oldPos = pos.cpy();
         tempPos = pos.cpy();
         switch (d){
             case UP:
@@ -91,6 +90,26 @@ public class BaseGameObject {
                 .start(Assets.tween);
     }
 
+
+    public Vector2 getFront(){
+        switch(direction){
+            case UP: return new Vector2(pos.x, pos.y + 1);
+            case DOWN: return new Vector2(pos.x, pos.y - 1);
+            case LEFT: return new Vector2(pos.x - 1, pos.y);
+            case RIGHT: return new Vector2(pos.x + 1, pos.y);
+        }
+        return new Vector2();
+    }
+
+    public Vector2 getBehind(){
+        switch(direction){
+            case UP: return new Vector2(pos.x, pos.y - 1);
+            case DOWN: return new Vector2(pos.x, pos.y + 1);
+            case LEFT: return new Vector2(pos.x + 1, pos.y);
+            case RIGHT: return new Vector2(pos.x - 1, pos.y);
+        }
+        return new Vector2();
+    }
 
     public void rotate(boolean clockwise)
     {
@@ -146,7 +165,7 @@ public class BaseGameObject {
     }
 
     public boolean overlaps(BaseGameObject other){
-        return (pos.x == other.pos.x && pos.y == other.pos.y);
+        return (pos.epsilonEquals(other.pos, .1f));
     }
 
     public boolean passedThrough(BaseGameObject obj)
@@ -158,11 +177,16 @@ public class BaseGameObject {
                 oldPos.y == obj.pos.y;
     }
 
+    public void setOldPos(){
+        oldPos = pos.cpy();
+    }
+
     public void revert(){
         if (moveTween != null) moveTween.kill();
+        if (pos.epsilonEquals(oldPos, .1f)) return;
         Timeline.createSequence()
                 .push(Tween.to(renderPos, Vector2Accessor.XY, Assets.MOVE_DELAY/2)
-                    .target(tempPos.x, tempPos.y))
+                        .target(tempPos.x, tempPos.y))
                 .push(Tween.to(renderPos, Vector2Accessor.XY, Assets.MOVE_DELAY/2)
                         .target(oldPos.x, oldPos.y))
                 .start(Assets.tween);
