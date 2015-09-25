@@ -78,6 +78,7 @@ public class GamePlayScreen extends GameScreen {
             }
         }
 
+
         // Instantiate player
         int px = level.getSpawnCellIndex() % level.getWidth();
         int py = level.getSpawnCellIndex() / level.getWidth();
@@ -206,8 +207,24 @@ public class GamePlayScreen extends GameScreen {
         }
     }
 
-    private void processInteractions(){
+    public BaseGameObject getObjectAt(Vector2 pos){
+        final int objectSize  = gameObjects.size;
+        for (int i = 0; i < objectSize; i++){
+            BaseGameObject obj = gameObjects.get(i);
+            if (obj.walkable) continue;
+            if (obj.pos.x == pos.x && obj.pos.y == pos.y) return obj;
+        }
+        return null;
+    }
 
+    private void processInteractions(){
+        final int objectSize  = gameObjects.size;
+        for (int i = 0; i < objectSize; i++){
+            BaseGameObject obj = gameObjects.get(i);
+            if (!obj.interactable) continue;
+            obj.interactWith(getObjectAt(obj.pos));
+
+        }
     }
 
     @Override

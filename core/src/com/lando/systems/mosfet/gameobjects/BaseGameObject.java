@@ -18,7 +18,7 @@ public class BaseGameObject {
 
     public Vector2 pos;
     public Vector2 oldPos;
-    public Vector2 targetPos;
+    public Vector2 renderPos;
     public Vector2 tempPos;
     public TextureRegion tex;
     public DIR direction;
@@ -28,13 +28,14 @@ public class BaseGameObject {
     public boolean conflict;
     public BaseTween moveTween;
     MutableFloat rotationAngleDeg;
+    public boolean interactable;
 
 
     public BaseGameObject(Vector2 p){
         tex = new TextureRegion(Assets.stoneTexture);
         pos = p;
         oldPos = p.cpy();
-        targetPos = p.cpy();
+        renderPos = p.cpy();
         tempPos = p.cpy();
         direction = DIR.UP;
         stationary = true;
@@ -42,6 +43,7 @@ public class BaseGameObject {
         conflict = false;
         canRotate = false;
         rotationAngleDeg = new MutableFloat(getRotationFromDir());
+        interactable = false;
     }
 
     public void update(float dt){
@@ -49,7 +51,7 @@ public class BaseGameObject {
     }
 
     public void render(SpriteBatch batch){
-        batch.draw(tex, pos.x, pos.y, 1, 1);
+        batch.draw(tex, renderPos.x, renderPos.y, 1, 1);
     }
 
     public void move(boolean forward){
@@ -61,24 +63,24 @@ public class BaseGameObject {
         tempPos = pos.cpy();
         switch (d){
             case UP:
-                targetPos.y = pos.y + 1;
-                tempPos.y = pos.y + .5f;
+                pos.y = oldPos.y + 1;
+                tempPos.y = oldPos.y + .5f;
                 break;
             case RIGHT:
-                targetPos.x = pos.x + 1;
-                tempPos.x = pos.x + .5f;
+                pos.x = oldPos.x + 1;
+                tempPos.x = oldPos.x + .5f;
                 break;
             case DOWN:
-                targetPos.y = pos.y - 1;
-                tempPos.y = pos.y - .5f;
+                pos.y = oldPos.y - 1;
+                tempPos.y = oldPos.y - .5f;
                 break;
             case LEFT:
-                targetPos.x =pos.x - 1;
-                tempPos.x = pos.x - .5f;
+                pos.x =oldPos.x - 1;
+                tempPos.x = oldPos.x - .5f;
                 break;
         }
-        moveTween = Tween.to(pos, Vector2Accessor.XY, Assets.MOVE_DELAY)
-                .target(targetPos.x, targetPos.y)
+        moveTween = Tween.to(renderPos, Vector2Accessor.XY, Assets.MOVE_DELAY)
+                .target(pos.x, pos.y)
                 .start(Assets.tween);
     }
 
@@ -121,18 +123,30 @@ public class BaseGameObject {
 
     }
 
+    /**
+     * have the object get acted on
+     *
+     * @param obj if obj is null that means nothing is on it.
+     */
+    public void interactWith(BaseGameObject obj){
+
+    }
+
     public boolean collides(BaseGameObject other){
         if (other.walkable) return false;
-        if (targetPos.x == other.targetPos.x && targetPos.y == other.targetPos.y) return true;
-        return false;
+        return overlaps(other);
+    }
+
+    public boolean overlaps(BaseGameObject other){
+        return (pos.x == other.pos.x && pos.y == other.pos.y);
     }
 
     public boolean passedThrough(BaseGameObject obj)
     {
-        if (targetPos.x == obj.oldPos.x &&
-                targetPos.y == obj.oldPos.y &&
-                oldPos.x == obj.targetPos.x &&
-                oldPos.y == obj.targetPos.y)
+        if (pos.x == obj.oldPos.x &&
+                pos.y == obj.oldPos.y &&
+                oldPos.x == obj.pos.x &&
+                oldPos.y == obj.pos.y)
             return true;
         else
             return false;
@@ -141,12 +155,12 @@ public class BaseGameObject {
     public void revert(){
         if (moveTween != null) moveTween.kill();
         Timeline.createSequence()
-                .push(Tween.to(pos, Vector2Accessor.XY, Assets.MOVE_DELAY/2)
+                .push(Tween.to(renderPos, Vector2Accessor.XY, Assets.MOVE_DELAY/2)
                     .target(tempPos.x, tempPos.y))
-                .push(Tween.to(pos, Vector2Accessor.XY, Assets.MOVE_DELAY/2)
+                .push(Tween.to(renderPos, Vector2Accessor.XY, Assets.MOVE_DELAY/2)
                         .target(oldPos.x, oldPos.y))
                 .start(Assets.tween);
-        targetPos = oldPos.cpy();
+        pos = oldPos.cpy();
     }
 
     public DIR invertDir(DIR d){

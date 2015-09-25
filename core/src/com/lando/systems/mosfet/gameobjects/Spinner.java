@@ -8,5 +8,12 @@ import com.badlogic.gdx.math.Vector2;
 public class Spinner extends BaseGameObject {
     public Spinner(Vector2 p) {
         super(p);
+        walkable = true;
+        interactable = true;
+    }
+
+    public void interactWith(BaseGameObject other){
+        if (other != null)
+            other.rotate(true);
     }
 }

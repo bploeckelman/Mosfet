@@ -23,7 +23,7 @@ public class Player extends BaseGameObject {
 
     @Override
     public void render(SpriteBatch batch) {
-        batch.draw(tex, pos.x, pos.y, 0.5f, 0.5f, 1f, 1f, 1f, 1f, rotationAngleDeg.floatValue());
+        batch.draw(tex, renderPos.x, renderPos.y, 0.5f, 0.5f, 1f, 1f, 1f, 1f, rotationAngleDeg.floatValue());
     }
 
 
