@@ -38,13 +38,20 @@ public class Assets {
     public static Texture testTexture;
     public static Texture circleTexture;
     public static Texture stoneTexture;
-    public static Texture spritesheetTexture;
+    public static Texture spritesheetTexturePlaceholder;
 
-    public static TextureRegion[][] spriteRegions;
+    public static TextureRegion[][] spritePlaceholderRegions;
     public static TextureRegion     blankRegion;
     public static TextureRegion     spawnRegion;
     public static TextureRegion     wallRegion;
     public static TextureRegion     exitRegion;
+    public static TextureRegion     doorClosedRegion;
+    public static TextureRegion     doorOpenRegion;
+    public static TextureRegion     blockerPushPullRegion;
+    public static TextureRegion     blockerPushRegion;
+    public static TextureRegion     blockerPullRegion;
+    public static TextureRegion     playerRegion;
+    public static TextureRegion     aiRegion;
 
 
     public static void load() {
@@ -63,26 +70,33 @@ public class Assets {
 
         prefs = Gdx.app.getPreferences(PREFS_FILE);
 
-        testTexture = new Texture("badlogic.jpg");
-        circleTexture = new Texture("circle.png");
-        stoneTexture = new Texture("stone.png");
-        spritesheetTexture = new Texture("spritesheet.png");
+//        testTexture = new Texture("badlogic.jpg");
+//        circleTexture = new Texture("circle.png");
+//        stoneTexture = new Texture("stone.png");
+        spritesheetTexturePlaceholder = new Texture("spritesheet-placeholders.png");
 
-        spriteRegions = TextureRegion.split(spritesheetTexture, Config.tileSize, Config.tileSize);
-        blankRegion = spriteRegions[7][7];
-        spawnRegion = spriteRegions[0][0];
-        wallRegion = spriteRegions[0][1];
-        exitRegion = spriteRegions[0][2];
+        spritePlaceholderRegions = TextureRegion.split(spritesheetTexturePlaceholder, Config.tileSize, Config.tileSize);
+        blankRegion =               spritePlaceholderRegions[7][7];
+        spawnRegion =               spritePlaceholderRegions[0][0];
+        wallRegion =                spritePlaceholderRegions[0][1];
+        exitRegion =                spritePlaceholderRegions[0][2];
+        doorClosedRegion =          spritePlaceholderRegions[0][3];
+        doorOpenRegion =            spritePlaceholderRegions[0][4];
+        blockerPushPullRegion =     spritePlaceholderRegions[0][5];
+        blockerPushRegion =         spritePlaceholderRegions[0][6];
+        blockerPullRegion =         spritePlaceholderRegions[0][7];
+        playerRegion =              spritePlaceholderRegions[1][1];
+        aiRegion =                  spritePlaceholderRegions[1][0];
     }
 
     public static void dispose() {
         batch.dispose();
         modelBatch.dispose();
         font.dispose();
-        testTexture.dispose();
-        circleTexture.dispose();
-        stoneTexture.dispose();
-        spritesheetTexture.dispose();
+//        testTexture.dispose();
+//        circleTexture.dispose();
+//        stoneTexture.dispose();
+        spritesheetTexturePlaceholder.dispose();
     }
 
     private static ShaderProgram compileShaderProgram(FileHandle vertSource, FileHandle fragSource) {

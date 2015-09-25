@@ -15,7 +15,7 @@ public class Player extends BaseGameObject {
 
     public Player(Vector2 p) {
         super(p);
-        tex = new TextureRegion(Assets.testTexture);
+        tex = new TextureRegion(Assets.playerRegion);
         stationary = false;
         canRotate = true;
 
