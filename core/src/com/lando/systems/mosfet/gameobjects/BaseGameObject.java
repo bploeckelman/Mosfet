@@ -34,7 +34,7 @@ public class BaseGameObject {
 
 
     public BaseGameObject(Vector2 p){
-        tex = new TextureRegion(Assets.stoneTexture);
+        tex = new TextureRegion(Assets.wallRegion);
         pos = p;
         oldPos = p.cpy();
         renderPos = p.cpy();
