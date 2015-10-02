@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -34,6 +36,11 @@ public class GamePlayScreen extends GameScreen {
     Rectangle               backwardButton;
     Rectangle               turnRightButton;
     Rectangle               turnLeftButton;
+    PerspectiveCamera       perspectiveCamera;
+    boolean                 renderAs3d;
+
+    FirstPersonCameraController fpsCamController;
+
 
     public GamePlayScreen(MosfetGame game, Level level) {
         super(game);
@@ -46,6 +53,15 @@ public class GamePlayScreen extends GameScreen {
         int levelHeight = level.getHeight();
 
         Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
+
+        perspectiveCamera = new PerspectiveCamera(67f, Config.width, Config.height);
+        perspectiveCamera.position.set(levelWidth / 2f, levelHeight / 2f, 20f);
+        perspectiveCamera.lookAt(levelWidth / 2f, levelHeight / 2f, 0f);
+        perspectiveCamera.near = 1f;
+        perspectiveCamera.far = 300f;
+        perspectiveCamera.update();
+        renderAs3d = false;
+        fpsCamController = new FirstPersonCameraController(perspectiveCamera);
 
         // Fit the map while maintaining the crrect aspect ratio
         float aspect = Config.width/(float)Config.height;
@@ -70,7 +86,7 @@ public class GamePlayScreen extends GameScreen {
 
         resetLevel();
 
-        sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, false);
+        sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, true);
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
         sceneRegion.flip(false, true);
         movementDelay = 0;
@@ -127,6 +143,15 @@ public class GamePlayScreen extends GameScreen {
             levelEditorScreen.setLevel(level);
             game.setScreen(levelEditorScreen);
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            renderAs3d = !renderAs3d;
+            if (renderAs3d) {
+                Gdx.input.setInputProcessor(fpsCamController);
+            } else {
+                Gdx.input.setInputProcessor(null);
+            }
+        }
+        if (renderAs3d) fpsCamController.update();
 
         movementDelay -= delta;
         if (movementDelay <= 0){
@@ -176,15 +201,22 @@ public class GamePlayScreen extends GameScreen {
 
         sceneFrameBuffer.begin();
         {
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
             // Draw the world
-            batch.begin();
-            batch.setProjectionMatrix(camera.combined);
-            for (BaseGameObject obj : gameObjects){
-                obj.render(batch);
+            if (renderAs3d) {
+                Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+                Assets.modelBatch.begin(perspectiveCamera);
+                level.render(Assets.modelBatch);
+                Assets.modelBatch.end();
+            } else {
+                batch.begin();
+                batch.setProjectionMatrix(camera.combined);
+                for (BaseGameObject obj : gameObjects) {
+                    obj.render(batch);
+                }
+                batch.end();
             }
-            batch.end();
 
             // Draw user interface stuff
             batch.begin();

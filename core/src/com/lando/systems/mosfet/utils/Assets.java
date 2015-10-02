@@ -4,6 +4,7 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,7 +12,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -60,6 +65,11 @@ public class Assets {
     public static TextureRegion     switchRegion;
     public static TextureRegion     teleportRegion;
 
+    public static Model         cubeModel;
+    public static Environment   environment;
+
+    static AssetManager assetManager;
+
 
     public static void load() {
         if (tween == null) {
@@ -102,6 +112,16 @@ public class Assets {
         spinnerRegion         = spritePlaceholderRegions[1][2];
         switchRegion          = spritePlaceholderRegions[1][3];
         teleportRegion        = spritePlaceholderRegions[1][4];
+
+        final PointLight pointLight = new PointLight().set(new Color(1f, 1f, 1f, 1f), 0f, 0f, 5f, 20f);
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.2f, 0.2f, 1f));
+        environment.add(pointLight);
+
+        assetManager = new AssetManager();
+        assetManager.load("models/cube.g3dj", Model.class);
+        assetManager.finishLoading();
+        cubeModel = assetManager.get("models/cube.g3dj", Model.class);
     }
 
     public static void dispose() {
@@ -112,6 +132,7 @@ public class Assets {
         circleTexture.dispose();
         stoneTexture.dispose();
         spritesheetTexturePlaceholder.dispose();
+        assetManager.dispose();
     }
 
     private static ShaderProgram compileShaderProgram(FileHandle vertSource, FileHandle fragSource) {
