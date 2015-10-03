@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Rectangle;
@@ -18,6 +19,7 @@ import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
+import com.lando.systems.mosfet.world.Entity;
 import com.lando.systems.mosfet.world.Level;
 
 /**
@@ -30,6 +32,7 @@ public class GamePlayScreen extends GameScreen {
     TextureRegion           sceneRegion;
     Level                   level;
     Array<BaseGameObject>   gameObjects;
+    Array<ModelInstance>    levelModelInstances;
     Player                  player;
     float                   movementDelay;
     Rectangle               forwardButton;
@@ -99,6 +102,9 @@ public class GamePlayScreen extends GameScreen {
     }
 
     private void resetLevel(){
+        // Regenerate model instances for the level geometry
+        levelModelInstances = level.generateModelInstances();
+
         // Create game objects
         gameObjects = new Array<BaseGameObject>();
 
@@ -108,19 +114,20 @@ public class GamePlayScreen extends GameScreen {
         for (int y = 0; y < level.getHeight(); ++y) {
             for (int x = 0; x < level.getWidth(); ++x) {
                 pos.set(x, y);
-                int value = level.getCellAt(x, y);
-                switch (value) {
-                    case 0: gameObjects.add(new Floor(pos.cpy())); break;
-                    case 1: gameObjects.add(new Spawn(pos.cpy())); break;
-                    case 2: gameObjects.add(new Wall(pos.cpy())); break;
-                    case 3: gameObjects.add(new Exit((pos.cpy()))); break;
-                    case 4: gameObjects.add(new BlockerPull(pos.cpy())); break;
-                    case 5: gameObjects.add(new BlockerPush(pos.cpy())); break;
-                    case 6: gameObjects.add(new Door(pos.cpy())); break;
-                    case 7: gameObjects.add(new DumbRobot(pos.cpy())); break;
-                    case 8: gameObjects.add(new Spinner(pos.cpy())); break;
-                    case 9: gameObjects.add(new Switch(pos.cpy())); break;
-                    case 10: gameObjects.add(new Teleport(pos.cpy())); break;
+
+                final Entity.Type entityType = Entity.Type.getTypeForValue(level.getCellAt(x, y));
+                switch (entityType) {
+                    case BLANK:        gameObjects.add(new Floor(pos.cpy())); break;
+                    case SPAWN:        gameObjects.add(new Spawn(pos.cpy())); break;
+                    case WALL:         gameObjects.add(new Wall(pos.cpy())); break;
+                    case EXIT:         gameObjects.add(new Exit((pos.cpy()))); break;
+                    case BLOCKER_PULL: gameObjects.add(new BlockerPull(pos.cpy())); break;
+                    case BLOCKER_PUSH: gameObjects.add(new BlockerPush(pos.cpy())); break;
+                    case DOOR:         gameObjects.add(new Door(pos.cpy())); break;
+                    case DUMB_ROBOT:   gameObjects.add(new DumbRobot(pos.cpy())); break;
+                    case SPINNER:      gameObjects.add(new Spinner(pos.cpy())); break;
+                    case SWITCH:       gameObjects.add(new Switch(pos.cpy())); break;
+                    case TELEPORT:     gameObjects.add(new Teleport(pos.cpy())); break;
                 }
             }
         }
@@ -207,7 +214,7 @@ public class GamePlayScreen extends GameScreen {
             if (renderAs3d) {
                 Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
                 Assets.modelBatch.begin(perspectiveCamera);
-                level.render(Assets.modelBatch);
+                Assets.modelBatch.render(levelModelInstances, Assets.environment);
                 Assets.modelBatch.end();
             } else {
                 batch.begin();

@@ -3,10 +3,8 @@ package com.lando.systems.mosfet.world;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.gameobjects.GameObjectProps;
@@ -27,11 +25,8 @@ public class Level {
     boolean hasSpawn;
     boolean hasExit;
 
-    Array<ModelInstance> modelInstances;
-
     // Json reader requires no-arg ctor
     public Level() {
-        initializeModelInstances();
     }
 
     public Level(int width, int height) {
@@ -41,7 +36,6 @@ public class Level {
         this.cells    = new int[numCells];
         this.hasSpawn = false;
         this.hasExit  = false;
-        initializeModelInstances();
     }
 
     public Level(int width, int height, Array<GameObjectProps> objectPropsArray) {
@@ -57,12 +51,12 @@ public class Level {
             cells[i] = objectProps.getBits();
             ++i;
         }
-        initializeModelInstances();
     }
 
-    private void initializeModelInstances() {
-        this.modelInstances = new Array<ModelInstance>();
+    public Array<ModelInstance> generateModelInstances() {
+        final Array<ModelInstance> modelInstances = new Array<ModelInstance>();
         final float cell_size = 1f;
+
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 final Entity.Type type = Entity.Type.getTypeForValue(cells[y * width + x]);
@@ -89,8 +83,8 @@ public class Level {
                 modelInstances.add(instance);
             }
         }
+        return modelInstances;
     }
-
 
     public int getCellAt(int x, int y) {
         if (x >= 0 && x < width & y >= 0 && y < height) {
@@ -114,10 +108,6 @@ public class Level {
                 batch.draw(texture, x, y, 1, 1);
             }
         }
-    }
-
-    public void render(ModelBatch batch) {
-        batch.render(modelInstances, Assets.environment);
     }
 
     public int getSpawnCellIndex() {
