@@ -66,6 +66,7 @@ public class Assets {
     public static TextureRegion     teleportRegion;
 
     public static Model         cubeModel;
+    public static Model         robotModel;
     public static Environment   environment;
 
     static AssetManager assetManager;
@@ -120,8 +121,10 @@ public class Assets {
 
         assetManager = new AssetManager();
         assetManager.load("models/cube.g3dj", Model.class);
+        assetManager.load("models/robot-head.g3dj", Model.class);
         assetManager.finishLoading();
         cubeModel = assetManager.get("models/cube.g3dj", Model.class);
+        robotModel = assetManager.get("models/robot-head.g3dj", Model.class);
     }
 
     public static void dispose() {

@@ -6,6 +6,9 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
@@ -17,25 +20,27 @@ import com.lando.systems.mosfet.utils.accessors.Vector2Accessor;
 public class BaseGameObject {
     public enum DIR {UP, DOWN, LEFT, RIGHT}
 
-    public Vector2 pos;
-    public Vector2 oldPos;
-    public Vector2 renderPos;
-    public Vector2 tempPos;
+    public Vector2       pos;
+    public Vector2       oldPos;
+    public Vector2       renderPos;
+    public Vector2       tempPos;
     public TextureRegion tex;
-    public DIR direction;
-    public boolean stationary;
-    public boolean canRotate;
-    public boolean walkable;
-    public boolean conflict;
-    public BaseTween moveTween;
+    public ModelInstance modelInstance;
+    public DIR           direction;
+    public boolean       stationary;
+    public boolean       canRotate;
+    public boolean       walkable;
+    public boolean       conflict;
+    public BaseTween     moveTween;
     MutableFloat rotationAngleDeg;
     public boolean interactable;
     public boolean usedThisTurn;
 
 
-
-    public BaseGameObject(Vector2 p){
+    public BaseGameObject(Vector2 p) {
         tex = new TextureRegion(Assets.wallRegion);
+        modelInstance = new ModelInstance(Assets.robotModel);
+        modelInstance.transform.setToTranslation(p.x, p.y, 1);
         pos = p;
         oldPos = p.cpy();
         renderPos = p.cpy();
@@ -49,16 +54,21 @@ public class BaseGameObject {
         interactable = false;
     }
 
-    public void linkObject(BaseGameObject obj){
+    public void linkObject(BaseGameObject obj) {
 
     }
 
-    public void update(float dt){
-
+    public void update(float dt) {
+        modelInstance.transform.setTranslation(renderPos.x, renderPos.y, 1);
     }
 
-    public void render(SpriteBatch batch){
+    public void render(SpriteBatch batch) {
         batch.draw(tex, renderPos.x, renderPos.y, 0.5f, 0.5f, 1f, 1f, 1f, 1f, rotationAngleDeg.floatValue());
+    }
+
+    public void render(ModelBatch batch, Environment environment) {
+        if (environment != null) batch.render(modelInstance, environment);
+        else                     batch.render(modelInstance);
     }
 
     public void move(boolean forward, GamePlayScreen screen){

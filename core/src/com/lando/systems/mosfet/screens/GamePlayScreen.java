@@ -200,6 +200,9 @@ public class GamePlayScreen extends GameScreen {
                 movementDelay = Assets.MOVE_DELAY;
             }
         }
+        for (BaseGameObject obj : gameObjects) {
+            obj.update(delta);
+        }
     }
 
     @Override
@@ -215,6 +218,9 @@ public class GamePlayScreen extends GameScreen {
                 Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
                 Assets.modelBatch.begin(perspectiveCamera);
                 Assets.modelBatch.render(levelModelInstances, Assets.environment);
+                for (BaseGameObject obj : gameObjects) {
+                    if (obj instanceof Player) obj.render(Assets.modelBatch, Assets.environment);
+                }
                 Assets.modelBatch.end();
             } else {
                 batch.begin();
