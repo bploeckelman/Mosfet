@@ -47,7 +47,6 @@ public class Assets {
 
     public static Texture testTexture;
     public static Texture circleTexture;
-    public static Texture stoneTexture;
     public static Texture floorTexture;
     public static Texture spritesheetTexturePlaceholder;
     public static Texture upArrow;
@@ -102,7 +101,6 @@ public class Assets {
 
         testTexture = new Texture("badlogic.jpg");
         circleTexture = new Texture("circle.png");
-        stoneTexture = new Texture("stone.png");
         floorTexture = new Texture("floor-diffuse.png");
 
         upArrow = new Texture("up-arrow.png");
@@ -180,7 +178,6 @@ public class Assets {
         font.dispose();
         testTexture.dispose();
         circleTexture.dispose();
-        stoneTexture.dispose();
         floorTexture.dispose();
         spritesheetTexturePlaceholder.dispose();
         assetManager.dispose();

@@ -20,7 +20,7 @@
       "textures": [
 		{
 			"id": "checkerboard",
-			"filename": "../stone.png",
+			"filename": "stone.png",
 			"type": "DIFFUSE"
 		}
       ]
