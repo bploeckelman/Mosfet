@@ -14,7 +14,7 @@ public class Exit extends BaseGameObject {
     public Exit(Vector2 p) {
         super(p);
         tex = new TextureRegion(Assets.exitRegion);
-        modelInstance = new ModelInstance(Assets.cubeModel);
+        modelInstance = new ModelInstance(Assets.ladderModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);
         stationary = true;
         walkable = true;
