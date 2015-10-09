@@ -49,7 +49,7 @@ public class GamePlayScreen extends GameScreen {
     boolean                 renderAs3d;
 
     PerspectiveCameraController perCamController;
-    Vector3                 levelCenterPosition;
+    Vector3                 spawnPosition;
 
 
     public GamePlayScreen(MosfetGame game, Level level) {
@@ -58,13 +58,14 @@ public class GamePlayScreen extends GameScreen {
         if (level == null) {
             throw new GdxRuntimeException("GamePlayScreen requires a valid level");
         }
+        spawnPosition = new Vector3();
         this.level = level;
         int levelWidth = level.getWidth();
         int levelHeight = level.getHeight();
 
         Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
 
-
+        resetLevel();
 
         // Fit the map while maintaining the crrect aspect ratio
         float aspect = Config.width/(float)Config.height;
@@ -88,11 +89,10 @@ public class GamePlayScreen extends GameScreen {
         camera.update();
 
 
-        levelCenterPosition = new Vector3(levelWidth / 2f, levelHeight / 2f, 0f);
         perspectiveCamera = new PerspectiveCamera(45, Config.width, Config.height);
         perspectiveCamera.up.set(0,0,1);
-        perspectiveCamera.position.set(levelCenterPosition.x - 15, levelCenterPosition.y - 15, 20);
-        perspectiveCamera.lookAt(levelCenterPosition);
+        perspectiveCamera.position.set(spawnPosition.x - 15, spawnPosition.y - 15, 20);
+        perspectiveCamera.lookAt(spawnPosition);
 
         perspectiveCamera.near = 1f;
         perspectiveCamera.far = 300f;
@@ -102,7 +102,7 @@ public class GamePlayScreen extends GameScreen {
 
         enableInput();
 
-        resetLevel();
+
 
         sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, true);
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
@@ -154,6 +154,7 @@ public class GamePlayScreen extends GameScreen {
                 if (entityType == Entity.Type.SPAWN) {
                     final PointLight pointLight = new PointLight().set(new Color(1f, 0f, 1f, 1f), pos.x, pos.y, 1f, 2f);
                     Assets.environment.add(pointLight);
+                    spawnPosition.set(pos.x, pos.y, 0);
                 }
                 else if (entityType == Entity.Type.EXIT) {
                     final PointLight pointLight = new PointLight().set(new Color(0f, 1f, 0f, 1f), pos.x, pos.y, 1f, 2f);
