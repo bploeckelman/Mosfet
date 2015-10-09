@@ -1,5 +1,6 @@
 package com.lando.systems.mosfet.gameobjects;
 
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
@@ -13,6 +14,8 @@ public class Door extends BaseGameObject {
     public Door(Vector2 p) {
         super(p);
         tex = Assets.doorClosedRegion;
+        modelInstance = new ModelInstance(Assets.cubeModel);
+        modelInstance.transform.setToTranslation(p.x, p.y, 0);
         interactable = true;
     }
 

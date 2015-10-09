@@ -1,5 +1,6 @@
 package com.lando.systems.mosfet.gameobjects;
 
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
@@ -10,6 +11,8 @@ import com.lando.systems.mosfet.utils.Assets;
 public class Spinner extends BaseGameObject {
     public Spinner(Vector2 p) {
         super(p);
+        modelInstance = new ModelInstance(Assets.cubeModel);
+        modelInstance.transform.setToTranslation(p.x, p.y, 0);
         walkable = true;
         interactable = true;
         tex = Assets.spinnerRegion;

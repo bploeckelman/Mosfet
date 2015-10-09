@@ -9,14 +9,16 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
+import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -70,6 +72,10 @@ public class Assets {
 
     public static Model         cubeModel;
     public static Model         robotModel;
+    public static Model         floorModel;
+    public static Model         coordModel;
+    public static ModelInstance floorModelInstance;
+    public static ModelInstance coordModelInstance;
     public static Environment   environment;
 
     static AssetManager assetManager;
@@ -102,8 +108,8 @@ public class Assets {
         spritesheetTexturePlaceholder = new Texture("spritesheet-placeholders.png");
 
         spritePlaceholderRegions = TextureRegion.split(spritesheetTexturePlaceholder, Config.tileSize, Config.tileSize);
-        blankRegion           = spritePlaceholderRegions[7][7];
-        spawnRegion           = spritePlaceholderRegions[0][0];
+        blankRegion = spritePlaceholderRegions[7][7];
+        spawnRegion = spritePlaceholderRegions[0][0];
         wallRegion            = spritePlaceholderRegions[0][1];
         exitRegion            = spritePlaceholderRegions[0][2];
         doorClosedRegion      = spritePlaceholderRegions[0][3];
@@ -121,6 +127,27 @@ public class Assets {
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.2f, 0.2f, 1f));
         environment.add(pointLight);
+
+        final ModelBuilder modelBuilder = new ModelBuilder();
+        final Material floorMaterial = new Material(TextureAttribute.createDiffuse(stoneTexture));
+        final long floorAttribs = VertexAttributes.Usage.Position
+                                | VertexAttributes.Usage.Normal
+                                | VertexAttributes.Usage.TextureCoordinates;
+        floorModel = modelBuilder.createRect(
+                -0.5f, -0.5f, 0f,
+                 0.5f, -0.5f, 0f,
+                 0.5f,  0.5f, 0f,
+                -0.5f,  0.5f, 0f,
+                   0f,    0f, 1f,
+                floorMaterial,
+                floorAttribs
+        );
+        floorModelInstance = new ModelInstance(floorModel);
+
+        final Material coordMaterial = new Material(ColorAttribute.createDiffuse(1f, 1f, 1f, 1f));
+        final long coordAttribs = VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorUnpacked;
+        coordModel = modelBuilder.createXYZCoordinates(1f, coordMaterial, coordAttribs);
+        coordModelInstance = new ModelInstance(coordModel);
 
         assetManager = new AssetManager();
         assetManager.load("models/cube.g3dj", Model.class);

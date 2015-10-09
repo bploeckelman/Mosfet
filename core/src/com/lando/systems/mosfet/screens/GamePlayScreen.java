@@ -32,7 +32,7 @@ public class GamePlayScreen extends GameScreen {
     TextureRegion           sceneRegion;
     Level                   level;
     Array<BaseGameObject>   gameObjects;
-    Array<ModelInstance>    levelModelInstances;
+    Array<ModelInstance>    floorCellInstances;
     Player                  player;
     float                   movementDelay;
     Rectangle               forwardButton;
@@ -98,12 +98,11 @@ public class GamePlayScreen extends GameScreen {
         backwardButton = new Rectangle(uiCamera.viewportWidth - 125, 50, 50, 50);
         turnRightButton = new Rectangle(uiCamera.viewportWidth - 100, 100, 50, 50);
         turnLeftButton = new Rectangle(uiCamera.viewportWidth - 150, 100, 50, 50);
-
     }
 
     private void resetLevel(){
         // Regenerate model instances for the level geometry
-        levelModelInstances = level.generateModelInstances();
+        floorCellInstances = new Array<ModelInstance>();
 
         // Create game objects
         gameObjects = new Array<BaseGameObject>();
@@ -117,7 +116,6 @@ public class GamePlayScreen extends GameScreen {
 
                 final Entity.Type entityType = Entity.Type.getTypeForValue(level.getCellAt(x, y));
                 switch (entityType) {
-                    case BLANK:        gameObjects.add(new Floor(pos.cpy())); break;
                     case SPAWN:        gameObjects.add(new Spawn(pos.cpy())); break;
                     case WALL:         gameObjects.add(new Wall(pos.cpy())); break;
                     case EXIT:         gameObjects.add(new Exit((pos.cpy()))); break;
@@ -128,6 +126,12 @@ public class GamePlayScreen extends GameScreen {
                     case SPINNER:      gameObjects.add(new Spinner(pos.cpy())); break;
                     case SWITCH:       gameObjects.add(new Switch(pos.cpy())); break;
                     case TELEPORT:     gameObjects.add(new Teleport(pos.cpy())); break;
+                }
+
+                if (entityType != Entity.Type.WALL) {
+                    ModelInstance floorCell = new ModelInstance(Assets.floorModelInstance);
+                    floorCell.transform.setToTranslation(x, y, 0f);
+                    floorCellInstances.add(floorCell);
                 }
             }
         }
@@ -217,9 +221,10 @@ public class GamePlayScreen extends GameScreen {
             if (renderAs3d) {
                 Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
                 Assets.modelBatch.begin(perspectiveCamera);
-                Assets.modelBatch.render(levelModelInstances, Assets.environment);
+                Assets.modelBatch.render(Assets.coordModelInstance);
+                Assets.modelBatch.render(floorCellInstances, Assets.environment);
                 for (BaseGameObject obj : gameObjects) {
-                    if (obj instanceof Player) obj.render(Assets.modelBatch, Assets.environment);
+                    obj.render(Assets.modelBatch, Assets.environment);
                 }
                 Assets.modelBatch.end();
             } else {

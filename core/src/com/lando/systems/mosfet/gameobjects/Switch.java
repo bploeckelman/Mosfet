@@ -1,5 +1,6 @@
 package com.lando.systems.mosfet.gameobjects;
 
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.lando.systems.mosfet.screens.GamePlayScreen;
@@ -14,6 +15,8 @@ public class Switch extends  BaseGameObject {
     public Switch(Vector2 p) {
         super(p);
         tex = Assets.switchRegion;
+        modelInstance = new ModelInstance(Assets.cubeModel);
+        modelInstance.transform.setToTranslation(p.x, p.y, 0);
         doors = new Array<Door>();
         walkable = true;
         interactable = true;

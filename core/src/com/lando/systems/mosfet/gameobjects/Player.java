@@ -3,6 +3,7 @@ package com.lando.systems.mosfet.gameobjects;
 
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
@@ -20,6 +21,8 @@ public class Player extends BaseGameObject {
         direction = d;
         rotationAngleDeg = new MutableFloat(getRotationFromDir());
 
+        modelInstance = new ModelInstance(Assets.robotModel);
+        modelInstance.transform.setToTranslation(p.x, p.y, 0);
         modelInstance.transform.rotate(0f, 0f, 1f, 180f);
     }
 

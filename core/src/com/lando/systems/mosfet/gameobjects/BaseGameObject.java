@@ -39,8 +39,6 @@ public class BaseGameObject {
 
     public BaseGameObject(Vector2 p) {
         tex = new TextureRegion(Assets.wallRegion);
-        modelInstance = new ModelInstance(Assets.robotModel);
-        modelInstance.transform.setToTranslation(p.x, p.y, 1);
         pos = p;
         oldPos = p.cpy();
         renderPos = p.cpy();
@@ -59,7 +57,7 @@ public class BaseGameObject {
     }
 
     public void update(float dt) {
-        modelInstance.transform.setTranslation(renderPos.x, renderPos.y, 1);
+        modelInstance.transform.setTranslation(renderPos.x, renderPos.y, 0);
     }
 
     public void render(SpriteBatch batch) {

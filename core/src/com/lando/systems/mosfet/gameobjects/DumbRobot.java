@@ -1,6 +1,7 @@
 package com.lando.systems.mosfet.gameobjects;
 
 import aurelienribon.tweenengine.primitives.MutableFloat;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
@@ -16,6 +17,8 @@ public class DumbRobot extends BaseGameObject {
 
     public DumbRobot(Vector2 p, DIR d){
         super(p);
+        modelInstance = new ModelInstance(Assets.robotModel);
+        modelInstance.transform.setToTranslation(p.x, p.y, 0);
         stationary = false;
         canRotate = true;
         direction = d;
@@ -36,6 +39,5 @@ public class DumbRobot extends BaseGameObject {
             if (obj != null) obj.bePushed(invertDir(direction));
         }
         moveDir(forward ? direction : invertDir(direction));
-
     }
 }
