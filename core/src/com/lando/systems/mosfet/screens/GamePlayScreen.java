@@ -3,11 +3,14 @@ package com.lando.systems.mosfet.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Rectangle;
@@ -101,6 +104,9 @@ public class GamePlayScreen extends GameScreen {
     }
 
     private void resetLevel(){
+        Assets.environment.clear();
+        Assets.environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.2f, 0.2f, 1f));
+
         // Regenerate model instances for the level geometry
         floorCellInstances = new Array<ModelInstance>();
 
@@ -132,6 +138,14 @@ public class GamePlayScreen extends GameScreen {
                     ModelInstance floorCell = new ModelInstance(Assets.floorModelInstance);
                     floorCell.transform.setToTranslation(x, y, 0f);
                     floorCellInstances.add(floorCell);
+                }
+                if (entityType == Entity.Type.SPAWN) {
+                    final PointLight pointLight = new PointLight().set(new Color(1f, 0f, 1f, 1f), pos.x, pos.y, 1f, 2f);
+                    Assets.environment.add(pointLight);
+                }
+                else if (entityType == Entity.Type.EXIT) {
+                    final PointLight pointLight = new PointLight().set(new Color(0f, 1f, 0f, 1f), pos.x, pos.y, 1f, 2f);
+                    Assets.environment.add(pointLight);
                 }
             }
         }

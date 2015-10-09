@@ -127,10 +127,8 @@ public class Assets {
         switchRegion          = spritePlaceholderRegions[1][3];
         teleportRegion        = spritePlaceholderRegions[1][4];
 
-        final PointLight pointLight = new PointLight().set(new Color(1f, 1f, 1f, 1f), 0f, 0f, 5f, 20f);
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.2f, 0.2f, 1f));
-        environment.add(pointLight);
 
         final ModelBuilder modelBuilder = new ModelBuilder();
         final Material floorMaterial = new Material(TextureAttribute.createDiffuse(floorTexture));
