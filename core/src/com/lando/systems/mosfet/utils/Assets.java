@@ -48,6 +48,7 @@ public class Assets {
     public static Texture testTexture;
     public static Texture circleTexture;
     public static Texture stoneTexture;
+    public static Texture floorTexture;
     public static Texture spritesheetTexturePlaceholder;
     public static Texture upArrow;
     public static Texture downArrow;
@@ -102,6 +103,7 @@ public class Assets {
         testTexture = new Texture("badlogic.jpg");
         circleTexture = new Texture("circle.png");
         stoneTexture = new Texture("stone.png");
+        floorTexture = new Texture("floor-diffuse.png");
 
         upArrow = new Texture("up-arrow.png");
         downArrow = new Texture("down-arrow.png");
@@ -131,7 +133,7 @@ public class Assets {
         environment.add(pointLight);
 
         final ModelBuilder modelBuilder = new ModelBuilder();
-        final Material floorMaterial = new Material(TextureAttribute.createDiffuse(stoneTexture));
+        final Material floorMaterial = new Material(TextureAttribute.createDiffuse(floorTexture));
         final long floorAttribs = VertexAttributes.Usage.Position
                                 | VertexAttributes.Usage.Normal
                                 | VertexAttributes.Usage.TextureCoordinates;
@@ -181,6 +183,7 @@ public class Assets {
         testTexture.dispose();
         circleTexture.dispose();
         stoneTexture.dispose();
+        floorTexture.dispose();
         spritesheetTexturePlaceholder.dispose();
         assetManager.dispose();
     }

@@ -19,7 +19,7 @@
       ],
       "textures": [
         {
-          "filename": "crate_diffuse.png",
+          "filename": "crate-diffuse.png",
           "id": "CrateTexture",
           "type": "DIFFUSE"
         }
