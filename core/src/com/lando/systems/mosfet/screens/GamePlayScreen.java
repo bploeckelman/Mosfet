@@ -305,6 +305,7 @@ public class GamePlayScreen extends GameScreen {
 
     public void win(){
         // TODO add logic to transition when you get to the exit
+        game.setScreen(new LevelSelectScreen(game));
     }
     // ------------------------------------------------------------------------
     // Private Implementation

@@ -57,6 +57,7 @@ public class BaseGameObject {
     }
 
     public void update(float dt) {
+        modelInstance.transform.setToRotation(0f, 0f, 1f, rotationAngleDeg.floatValue() + 90f);
         modelInstance.transform.setTranslation(renderPos.x, renderPos.y, 0);
     }
 

@@ -32,15 +32,6 @@ public class Player extends BaseGameObject {
 
 
     public void update(float dt) {
-        float degrees;
-        switch (direction) {
-            default:
-            case RIGHT: degrees = 0f;   break;
-            case UP:    degrees = 90f;  break;
-            case LEFT:  degrees = 180f; break;
-            case DOWN:  degrees = 270f; break;
-        }
-        modelInstance.transform.setToRotation(0f, 0f, 1f, degrees);
         super.update(dt);
     }
 
