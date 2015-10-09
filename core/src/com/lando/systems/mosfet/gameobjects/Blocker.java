@@ -10,7 +10,7 @@ import com.lando.systems.mosfet.utils.Assets;
 public class Blocker extends BaseGameObject {
     public Blocker(Vector2 p) {
         super(p);
-        modelInstance = new ModelInstance(Assets.cubeModel);
+        modelInstance = new ModelInstance(Assets.crateModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);
         stationary = false;
     }

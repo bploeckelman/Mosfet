@@ -75,6 +75,7 @@ public class Assets {
     public static Model         floorModel;
     public static Model         coordModel;
     public static Model         ladderModel;
+    public static Model         crateModel;
     public static ModelInstance floorModelInstance;
     public static ModelInstance coordModelInstance;
     public static Environment   environment;
@@ -154,10 +155,12 @@ public class Assets {
         assetManager.load("models/cube.g3dj", Model.class);
         assetManager.load("models/robot-head.g3dj", Model.class);
         assetManager.load("models/ladder.g3dj", Model.class);
+        assetManager.load("models/crate.g3dj", Model.class);
         assetManager.finishLoading();
         cubeModel = assetManager.get("models/cube.g3dj", Model.class);
         robotModel = assetManager.get("models/robot-head.g3dj", Model.class);
         ladderModel = assetManager.get("models/ladder.g3dj", Model.class);
+        crateModel = assetManager.get("models/crate.g3dj", Model.class);
 
         // Lets load up some levels, here is a comment cause Brain says I don't comment anything
         levels = new Array<Level>();
