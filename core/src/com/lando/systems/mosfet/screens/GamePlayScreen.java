@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -22,6 +24,7 @@ import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
+import com.lando.systems.mosfet.utils.camera.PerspectiveCameraController;
 import com.lando.systems.mosfet.world.Entity;
 import com.lando.systems.mosfet.world.Level;
 
@@ -45,7 +48,8 @@ public class GamePlayScreen extends GameScreen {
     PerspectiveCamera       perspectiveCamera;
     boolean                 renderAs3d;
 
-    FirstPersonCameraController fpsCamController;
+    PerspectiveCameraController perCamController;
+    Vector3                 levelCenterPosition;
 
 
     public GamePlayScreen(MosfetGame game, Level level) {
@@ -60,14 +64,7 @@ public class GamePlayScreen extends GameScreen {
 
         Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
 
-        perspectiveCamera = new PerspectiveCamera(67f, Config.width, Config.height);
-        perspectiveCamera.position.set(levelWidth / 2f, levelHeight / 2f, 20f);
-        perspectiveCamera.lookAt(levelWidth / 2f, levelHeight / 2f, 0f);
-        perspectiveCamera.near = 1f;
-        perspectiveCamera.far = 300f;
-        perspectiveCamera.update();
-        renderAs3d = false;
-        fpsCamController = new FirstPersonCameraController(perspectiveCamera);
+
 
         // Fit the map while maintaining the crrect aspect ratio
         float aspect = Config.width/(float)Config.height;
@@ -89,6 +86,21 @@ public class GamePlayScreen extends GameScreen {
         camera.setToOrtho(false, cameraWidth, cameraHeight);
         camera.translate(cameraOffset);
         camera.update();
+
+
+        levelCenterPosition = new Vector3(levelWidth / 2f, levelHeight / 2f, 0f);
+        perspectiveCamera = new PerspectiveCamera(45, Config.width, Config.height);
+        perspectiveCamera.rotate(45, 0, 0, 1);
+        perspectiveCamera.position.set(levelWidth  * 2, -levelHeight / 2f, levelWidth * 2);
+        perspectiveCamera.lookAt(levelCenterPosition);
+
+        perspectiveCamera.near = 1f;
+        perspectiveCamera.far = 300f;
+        perspectiveCamera.update();
+        renderAs3d = true;
+        perCamController = new PerspectiveCameraController(perspectiveCamera);
+
+        enableInput();
 
         resetLevel();
 
@@ -171,12 +183,13 @@ public class GamePlayScreen extends GameScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             renderAs3d = !renderAs3d;
             if (renderAs3d) {
-                Gdx.input.setInputProcessor(fpsCamController);
+                Gdx.input.setInputProcessor(perCamController);
             } else {
                 Gdx.input.setInputProcessor(null);
             }
         }
-        if (renderAs3d) fpsCamController.update();
+
+        if (renderAs3d) perCamController.update();
 
         movementDelay -= delta;
         if (movementDelay <= 0){
@@ -343,6 +356,8 @@ public class GamePlayScreen extends GameScreen {
     protected void enableInput() {
         final InputMultiplexer mux = new InputMultiplexer();
         // TODO: add any other input processors here as needed
+        mux.addProcessor(perCamController);
+        mux.addProcessor(new GestureDetector(perCamController));
         Gdx.input.setInputProcessor(mux);
     }
 

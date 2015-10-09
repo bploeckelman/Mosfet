@@ -1,6 +1,7 @@
 package com.lando.systems.mosfet.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -45,6 +46,8 @@ public class LevelSelectScreen extends GameScreen {
 
     public void render(float dt){
         update(dt);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
         batch.begin();
         batch.setProjectionMatrix(uiCamera.combined);
         for (LevelSelectButton btn : levelBtns){
