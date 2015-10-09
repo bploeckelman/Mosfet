@@ -161,9 +161,6 @@ public class GamePlayScreen extends GameScreen {
                 }
             }
         }
-        gameObjects.add(new DumbRobot(new Vector2(2,2)));
-        gameObjects.add(new Blocker(new Vector2(2,3)));
-
 
         // Instantiate player
         int px = level.getSpawnCellIndex() % level.getWidth();

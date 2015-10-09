@@ -13,7 +13,7 @@ public class Spawn extends BaseGameObject {
     public Spawn(Vector2 p) {
         super(p);
         tex = new TextureRegion(Assets.spawnRegion);
-        modelInstance = new ModelInstance(Assets.cubeModel);
+        modelInstance = new ModelInstance(Assets.ladderModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);
         stationary = true;
         walkable = true;
