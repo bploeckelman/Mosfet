@@ -46,6 +46,7 @@ public class Assets {
     public static Texture testTexture;
     public static Texture circleTexture;
     public static Texture floorTexture;
+    public static Texture switchActiveTexture;
     public static Texture spritesheetTexturePlaceholder;
     public static Texture upArrow;
     public static Texture downArrow;
@@ -107,6 +108,7 @@ public class Assets {
         rightArrow = new Texture("right-arrow.png");
         leftArrow = new Texture("left-arrow.png");
         spritesheetTexturePlaceholder = new Texture("spritesheet-placeholders.png");
+        switchActiveTexture = new Texture("switch1-active-diffuse.png");
 
         spritePlaceholderRegions = TextureRegion.split(spritesheetTexturePlaceholder, Config.tileSize, Config.tileSize);
         blankRegion = spritePlaceholderRegions[7][7];
@@ -180,6 +182,7 @@ public class Assets {
         testTexture.dispose();
         circleTexture.dispose();
         floorTexture.dispose();
+        switchActiveTexture.dispose();
         spritesheetTexturePlaceholder.dispose();
         assetManager.dispose();
     }
