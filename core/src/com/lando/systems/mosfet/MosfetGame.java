@@ -14,14 +14,16 @@ public class MosfetGame extends Game {
 	@Override
 	public void create () {
 		Assets.load();
-
+		Gdx.input.setCatchBackKey(true);
 //		final FileHandle levelFile = Gdx.files.internal("levels/level1.lvl");
 //		setScreen(new GamePlayScreen(this, (new Json()).fromJson(Level.class, levelFile)));
 		setScreen(new LevelSelectScreen(this));
+
 	}
 
 	@Override
 	public void render () {
+
 		float delta = Gdx.graphics.getDeltaTime();
 		delta = Math.min(delta, 1 / 30f);
 		Assets.tween.update(delta);

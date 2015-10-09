@@ -1,6 +1,7 @@
 package com.lando.systems.mosfet.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -33,6 +34,9 @@ public class LevelSelectScreen extends GameScreen {
     }
 
     public void update(float dt){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+            Gdx.app.exit();
+        }
         if (Gdx.input.justTouched()){
             Vector3 camTouchPointV3 = uiCamera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             Vector2 camTouchPoint = new Vector2(camTouchPointV3.x, camTouchPointV3.y);

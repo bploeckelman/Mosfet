@@ -90,15 +90,15 @@ public class GamePlayScreen extends GameScreen {
 
         levelCenterPosition = new Vector3(levelWidth / 2f, levelHeight / 2f, 0f);
         perspectiveCamera = new PerspectiveCamera(45, Config.width, Config.height);
-        perspectiveCamera.rotate(45, 0, 0, 1);
-        perspectiveCamera.position.set(levelWidth  * 2, -levelHeight / 2f, levelWidth * 2);
+        perspectiveCamera.up.set(0,0,1);
+        perspectiveCamera.position.set(levelCenterPosition.x - 15, levelCenterPosition.y - 15, 20);
         perspectiveCamera.lookAt(levelCenterPosition);
 
         perspectiveCamera.near = 1f;
         perspectiveCamera.far = 300f;
         perspectiveCamera.update();
         renderAs3d = true;
-        perCamController = new PerspectiveCameraController(perspectiveCamera);
+        perCamController = new PerspectiveCameraController(perspectiveCamera, new Vector2(levelWidth, levelHeight));
 
         enableInput();
 
@@ -175,6 +175,9 @@ public class GamePlayScreen extends GameScreen {
     @Override
     public void update(float delta) {
         super.update(delta);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+            game.setScreen(new LevelSelectScreen(game));
+        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             LevelEditorScreen levelEditorScreen = new LevelEditorScreen(game);
             levelEditorScreen.setLevel(level);

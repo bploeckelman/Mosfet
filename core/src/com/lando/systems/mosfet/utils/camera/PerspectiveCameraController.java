@@ -33,8 +33,11 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
     private float rotationAmount = 0;
     private float initialFOV;
     private float lastRotation;
+    private Vector3 lookatPosition = new Vector3();
+    private Vector2 levelSize;
 
-    public PerspectiveCameraController (PerspectiveCamera camera) {
+    public PerspectiveCameraController (PerspectiveCamera camera, Vector2 size) {
+        this.levelSize = size;
         this.camera = camera;
     }
 
@@ -107,10 +110,10 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
             rotationAmount -= 90;
         }
 
+        Intersector.intersectRayPlane(new Ray(camera.position, camera.direction), new Plane(Vector3.Z, Vector3.Zero), lookatPosition);
+
         float rotAbs = Math.abs(rotationAmount);
         if (rotAbs > 0){
-            Vector3 lookatPosition = new Vector3();
-            Intersector.intersectRayPlane(new Ray(camera.position, camera.direction), new Plane(Vector3.Z, Vector3.Zero), lookatPosition);
             float rot = rotationSpeed * deltaTime * Math.signum(rotationAmount);
             if (Math.abs(rot) > rotAbs){
                 rot = rotationAmount;
@@ -119,6 +122,20 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
             camera.rotateAround(lookatPosition, Vector3.Z, rot);
 
         }
+
+        if (lookatPosition.x < 0){
+            camera.position.add(-lookatPosition.x, 0, 0);
+        }
+        if (lookatPosition.x > levelSize.x){
+            camera.position.add(-(lookatPosition.x - levelSize.x), 0, 0);
+        }
+        if (lookatPosition.y < 0){
+            camera.position.add(0, -lookatPosition.y, 0);
+        }
+        if (lookatPosition.y > levelSize.y){
+            camera.position.add(0, -(lookatPosition.y - levelSize.y), 0);
+        }
+
         camera.update(true);
     }
 
@@ -184,7 +201,7 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
         if (lastRotation == Float.MIN_VALUE){
             lastRotation = dif;
         }
-        Vector3 lookatPosition = new Vector3();
+
         Intersector.intersectRayPlane(new Ray(camera.position, camera.direction), new Plane(Vector3.Z, Vector3.Zero), lookatPosition);
         camera.rotateAround(lookatPosition, Vector3.Z, dif - lastRotation);
         camera.update();
