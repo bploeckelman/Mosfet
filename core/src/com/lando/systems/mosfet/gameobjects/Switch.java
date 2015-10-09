@@ -15,7 +15,7 @@ public class Switch extends  BaseGameObject {
     public Switch(Vector2 p) {
         super(p);
         tex = Assets.switchRegion;
-        modelInstance = new ModelInstance(Assets.cubeModel);
+        modelInstance = new ModelInstance(Assets.switchModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);
         doors = new Array<Door>();
         walkable = true;
