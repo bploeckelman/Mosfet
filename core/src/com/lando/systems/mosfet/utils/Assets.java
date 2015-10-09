@@ -21,9 +21,12 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.Json;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.utils.accessors.*;
+import com.lando.systems.mosfet.world.Level;
 
 /**
  * Brian Ploeckelman created on 9/10/2015.
@@ -70,7 +73,7 @@ public class Assets {
     public static Environment   environment;
 
     static AssetManager assetManager;
-
+    public static Array<Level> levels;
 
     public static void load() {
         if (tween == null) {
@@ -125,6 +128,17 @@ public class Assets {
         assetManager.finishLoading();
         cubeModel = assetManager.get("models/cube.g3dj", Model.class);
         robotModel = assetManager.get("models/robot-head.g3dj", Model.class);
+
+        // Lets load up some levels, here is a comment cause Brain says I don't comment anything
+        levels = new Array<Level>();
+        FileHandle levelList = Gdx.files.internal("levels/level_list.txt");
+        String[] levelNames = levelList.readString().split("\n");
+        for (int i = 0; i < levelNames.length; i++){
+            FileHandle levelFile = Gdx.files.internal("levels/"+ levelNames[i].trim());
+            Level l = (new Json()).fromJson(Level.class, levelFile);
+            l.levelIndex = i;
+            levels.add(l);
+        }
     }
 
     public static void dispose() {

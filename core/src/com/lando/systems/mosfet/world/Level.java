@@ -24,6 +24,7 @@ public class Level {
     int[]   cells;
     boolean hasSpawn;
     boolean hasExit;
+    public int levelIndex;
 
     // Json reader requires no-arg ctor
     public Level() {
