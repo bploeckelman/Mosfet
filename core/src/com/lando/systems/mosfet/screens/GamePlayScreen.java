@@ -1,10 +1,14 @@
 package com.lando.systems.mosfet.screens;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.equations.Sine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -12,7 +16,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
-import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
@@ -24,6 +27,7 @@ import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
+import com.lando.systems.mosfet.utils.accessors.Vector3Accessor;
 import com.lando.systems.mosfet.utils.camera.PerspectiveCameraController;
 import com.lando.systems.mosfet.world.Entity;
 import com.lando.systems.mosfet.world.Level;
@@ -50,6 +54,8 @@ public class GamePlayScreen extends GameScreen {
 
     PerspectiveCameraController perCamController;
     Vector3                 spawnPosition;
+    Vector3                 cameraPosition;
+    Vector3                 cameraLookAt;
 
 
     public GamePlayScreen(MosfetGame game, Level level) {
@@ -64,8 +70,6 @@ public class GamePlayScreen extends GameScreen {
         int levelHeight = level.getHeight();
 
         Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
-
-        resetLevel();
 
         // Fit the map while maintaining the crrect aspect ratio
         float aspect = Config.width/(float)Config.height;
@@ -88,11 +92,13 @@ public class GamePlayScreen extends GameScreen {
         camera.translate(cameraOffset);
         camera.update();
 
+        cameraPosition = new Vector3(spawnPosition.x, spawnPosition.y, 5);
+        cameraLookAt = new Vector3(spawnPosition);
 
         perspectiveCamera = new PerspectiveCamera(45, Config.width, Config.height);
         perspectiveCamera.up.set(0,0,1);
-        perspectiveCamera.position.set(spawnPosition.x - 15, spawnPosition.y - 15, 20);
-        perspectiveCamera.lookAt(spawnPosition);
+        perspectiveCamera.position.set(cameraPosition);
+        perspectiveCamera.lookAt(cameraLookAt);
 
         perspectiveCamera.near = 1f;
         perspectiveCamera.far = 300f;
@@ -102,7 +108,7 @@ public class GamePlayScreen extends GameScreen {
 
         enableInput();
 
-
+        resetLevel();
 
         sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, true);
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
@@ -168,6 +174,24 @@ public class GamePlayScreen extends GameScreen {
         int py = level.getSpawnCellIndex() / level.getWidth();
         player = new Player(new Vector2(px, py));
         gameObjects.add(player);
+
+        cameraPosition.set(spawnPosition.x, spawnPosition.y, 10);
+        cameraLookAt.set(spawnPosition);
+
+        perCamController.pause = true;
+        perspectiveCamera.position.set(cameraPosition);
+        perspectiveCamera.lookAt(cameraLookAt);
+        perspectiveCamera.update(true);
+        Tween.to(cameraPosition, Vector3Accessor.XYZ, 4*Assets.MOVE_DELAY)
+                .target(spawnPosition.x - 15f, spawnPosition.y - 15f, 20f)
+                .ease(Sine.IN)
+                .setCallback(new TweenCallback() {
+                    @Override
+                    public void onEvent(int i, BaseTween<?> baseTween) {
+                        perCamController.pause = false;
+                    }
+                })
+                .start(Assets.tween);
     }
 
     @Override
@@ -190,7 +214,15 @@ public class GamePlayScreen extends GameScreen {
             }
         }
 
-        if (renderAs3d) perCamController.update();
+        if (renderAs3d) {
+            if (perCamController.pause) {
+                perspectiveCamera.up.set(0,0,1);
+                perspectiveCamera.position.set(cameraPosition);
+                perspectiveCamera.lookAt(cameraLookAt);
+                perspectiveCamera.update(true);
+            }
+            perCamController.update();
+        }
 
         movementDelay -= delta;
         if (movementDelay <= 0){

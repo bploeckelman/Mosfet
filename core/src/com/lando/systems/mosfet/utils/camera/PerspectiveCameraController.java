@@ -35,6 +35,9 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
     private float lastRotation;
     private Vector3 lookatPosition = new Vector3();
     private Vector2 levelSize;
+    private Ray lookRay = new Ray();
+    private final Plane zZeroPlane = new Plane(Vector3.Z, Vector3.Zero);
+    public  boolean pause = false;
 
     public PerspectiveCameraController (PerspectiveCamera camera, Vector2 size) {
         this.levelSize = size;
@@ -81,6 +84,8 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
     }
 
     public void update (float deltaTime) {
+        if (pause) return;
+
         if (keys.containsKey(FORWARD)) {
             tmp.set(camera.direction.x, camera.direction.y, 0).nor().scl(deltaTime * velocity);
             camera.position.add(tmp);
@@ -110,7 +115,8 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
             rotationAmount -= 90;
         }
 
-        Intersector.intersectRayPlane(new Ray(camera.position, camera.direction), new Plane(Vector3.Z, Vector3.Zero), lookatPosition);
+        lookRay.set(camera.position, camera.direction);
+        Intersector.intersectRayPlane(lookRay, zZeroPlane, lookatPosition);
 
         float rotAbs = Math.abs(rotationAmount);
         if (rotAbs > 0){
