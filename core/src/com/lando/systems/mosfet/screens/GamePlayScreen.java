@@ -175,22 +175,30 @@ public class GamePlayScreen extends GameScreen {
         player = new Player(new Vector2(px, py));
         gameObjects.add(player);
 
-        cameraPosition.set(spawnPosition.x, spawnPosition.y, 10);
+        cameraPosition.set(spawnPosition.x, spawnPosition.y, 5);
         cameraLookAt.set(spawnPosition);
 
         perCamController.pause = true;
         perspectiveCamera.position.set(cameraPosition);
         perspectiveCamera.lookAt(cameraLookAt);
         perspectiveCamera.update(true);
-        Tween.to(cameraPosition, Vector3Accessor.XYZ, 4*Assets.MOVE_DELAY)
-                .target(spawnPosition.x - 15f, spawnPosition.y - 15f, 20f)
-                .ease(Sine.IN)
-                .setCallback(new TweenCallback() {
-                    @Override
-                    public void onEvent(int i, BaseTween<?> baseTween) {
-                        perCamController.pause = false;
-                    }
-                })
+        Timeline.createSequence()
+                .push(
+                        Tween.to(cameraPosition, Vector3Accessor.XYZ, 4*Assets.MOVE_DELAY)
+                             .target(spawnPosition.x, spawnPosition.y - 15f, 20f)
+                             .ease(Sine.IN)
+                     )
+                .push(
+                        Tween.to(cameraPosition, Vector3Accessor.XYZ, 1.5f*Assets.MOVE_DELAY)
+                             .target(spawnPosition.x - 15f, spawnPosition.y - 15f, 20f)
+                             .ease(Sine.OUT)
+                             .setCallback(new TweenCallback() {
+                                 @Override
+                                 public void onEvent(int i, BaseTween<?> baseTween) {
+                                     perCamController.pause = false;
+                                 }
+                             })
+                     )
                 .start(Assets.tween);
     }
 
