@@ -18,9 +18,9 @@ import com.lando.systems.mosfet.utils.ui.LevelSelectButton;
 public class LevelSelectScreen extends GameScreen {
 
     Array<LevelSelectButton> levelBtns;
-    int LEVELS_PER_ROW = 5;
+    int LEVELS_PER_ROW = 4;
     float LEVEL_BUTTON_MARGIN = 20;
-    float SCREEN_TOP_MARGIN = 80;
+    float SCREEN_TOP_MARGIN = 160;
 
     public LevelSelectScreen(MosfetGame game) {
         super(game);
@@ -42,7 +42,11 @@ public class LevelSelectScreen extends GameScreen {
             Vector2 camTouchPoint = new Vector2(camTouchPointV3.x, camTouchPointV3.y);
             for (LevelSelectButton btn : levelBtns){
                 if (btn.bounds.contains(camTouchPoint)){
-                    game.setScreen(new GamePlayScreen(game, btn.level));
+                    if (btn.editBounds.contains(camTouchPoint)) {
+                        game.setScreen(new LevelEditorScreen(game, btn.level));
+                    } else {
+                        game.setScreen(new GamePlayScreen(game, btn.level));
+                    }
                 }
             }
         }

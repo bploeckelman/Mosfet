@@ -67,6 +67,11 @@ public class LevelEditorScreen extends GameScreen {
         enableInput();
     }
 
+    public LevelEditorScreen(MosfetGame game, Level level) {
+        this(game);
+        setLevel(level);
+    }
+
     @Override
     public void update(float delta) {
         super.update(delta);
