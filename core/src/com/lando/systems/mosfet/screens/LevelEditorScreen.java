@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.GameObjectProps;
@@ -37,7 +37,8 @@ public class LevelEditorScreen extends GameScreen {
     TextureRegion          sceneRegion;
     Skin                   skin;
     Stage                  stage;
-    Window                 windowMenu;
+//    Window                 windowMenu;
+    Table                  windowMenu;
     Window                 windowToolbar;
     InfoDialog             infoDialog;
     OrthographicCamera     uiCamera;
@@ -84,7 +85,6 @@ public class LevelEditorScreen extends GameScreen {
 
         sceneFrameBuffer.begin();
         {
-            Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             // Draw the level
@@ -100,6 +100,7 @@ public class LevelEditorScreen extends GameScreen {
             batch.end();
 
             // Draw the user interface
+//            stage.setDebugAll(true);
             stage.draw();
         }
         sceneFrameBuffer.end();
@@ -127,7 +128,6 @@ public class LevelEditorScreen extends GameScreen {
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -182,23 +182,22 @@ public class LevelEditorScreen extends GameScreen {
     private void initializeUserInterface() {
         uiCamera = new OrthographicCamera();
         uiCamera.setToOrtho(false, Config.width, Config.height);
-        stage = new Stage(new ScreenViewport());
-        stage.getViewport().setCamera(uiCamera);
+        uiCamera.update(true);
+        stage = new Stage(new StretchViewport(Config.width, Config.height));
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 
-        windowMenu = new Window("LevelEd - Main Menu", skin);
-        windowMenu.setMovable(false);
-        windowMenu.setResizable(false);
-        windowMenu.setSize(camera.viewportWidth, 60f);
-        windowMenu.setPosition(0f, camera.viewportHeight - 60f);
-        windowMenu.setZIndex(0);
+//        windowMenu = new Window("LevelEd - Main Menu", skin);
+//        windowMenu.setMovable(false);
+//        windowMenu.setResizable(false);
+        windowMenu = new Table(skin);
+        windowMenu.setSize(uiCamera.viewportWidth, 60f);
+        windowMenu.setPosition(0f, uiCamera.viewportHeight - 60f);
 
         windowToolbar = new Window("Toolbar", skin);
         windowToolbar.setMovable(false);
         windowToolbar.setResizable(false);
-        windowToolbar.setSize(camera.viewportWidth, 60f);
+        windowToolbar.setSize(uiCamera.viewportWidth, 60f);
         windowToolbar.setPosition(0f, 0f);
-        windowToolbar.setZIndex(0);
 
         infoDialog = new InfoDialog("Info", skin);
 
@@ -274,21 +273,17 @@ public class LevelEditorScreen extends GameScreen {
         entityTypeSelect.setSelected(Entity.Type.BLANK);
         selectedEntityType = Entity.Type.BLANK;
 
-        windowMenu.top().left().add(playButton).padRight(15f).fillX().expandX();
-        windowMenu.top().left().add(newLevelBtn);
-        windowMenu.top().left().add(saveLevelBtn);
-        windowMenu.top().left().add(loadLevelBtn);
+        windowMenu.left().add(playButton).fillX().expandX().padRight(15f);
+        windowMenu.left().add(newLevelBtn);
+        windowMenu.left().add(saveLevelBtn);
+        windowMenu.left().add(loadLevelBtn);
         windowMenu.row();
-        final float titleHeight = windowMenu.getTitleLabel().getHeight();
-        windowMenu.padTop(titleHeight);
 
         windowToolbar.left().add(entityTypeSelect).fillX().expandX().padRight(15f);
         windowToolbar.left().add(eraseModeToggle).padRight(15f);
         windowToolbar.left().add(linkModeToggle).padRight(5f);
         windowToolbar.left().add(linkageLabel).padRight(5f);
         windowToolbar.row();
-        final float toolbarTitleHeight = windowToolbar.getTitleLabel().getHeight();
-        windowMenu.padTop(toolbarTitleHeight);
 
         stage.addActor(windowMenu);
         stage.addActor(windowToolbar);
