@@ -2,6 +2,7 @@ package com.lando.systems.mosfet.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -18,7 +19,6 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.GameObjectProps;
-import com.lando.systems.mosfet.utils.camera.LevelEditorController;
 import com.lando.systems.mosfet.utils.camera.OrthoCamController;
 import com.lando.systems.mosfet.utils.ui.ButtonInputListenerAdapter;
 import com.lando.systems.mosfet.utils.ui.InfoDialog;
@@ -31,7 +31,7 @@ import com.lando.systems.mosfet.world.Level;
 /**
  * Brian Ploeckelman created on 8/9/2015.
  */
-public class LevelEditorScreen extends GameScreen {
+public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
     FrameBuffer            sceneFrameBuffer;
     TextureRegion          sceneRegion;
@@ -121,7 +121,7 @@ public class LevelEditorScreen extends GameScreen {
         final InputMultiplexer mux = new InputMultiplexer();
         mux.addProcessor(stage);
         mux.addProcessor(new OrthoCamController(camera));
-        mux.addProcessor(new LevelEditorController(this));
+        mux.addProcessor(this);
         Gdx.input.setInputProcessor(mux);
     }
 
@@ -289,6 +289,10 @@ public class LevelEditorScreen extends GameScreen {
         stage.addActor(windowToolbar);
     }
 
+    // ------------------------------------------------------------------------
+    // Utility Methods
+    // ------------------------------------------------------------------------
+
     public void newLevel(int width, int height) {
         infoDialog.resetText("Instantiated new level of size: " + width + "x" + height);
         infoDialog.show(stage);
@@ -308,6 +312,86 @@ public class LevelEditorScreen extends GameScreen {
 
         int index = cellY * levelWidth + cellX;
         objectProps.set(index, new GameObjectProps(entityType));
+    }
+
+    // ------------------------------------------------------------------------
+    // InputProcessor Interface
+    // ------------------------------------------------------------------------
+
+    private boolean leftButtonDown = false;
+    private int lastCellClickedX = -1;
+    private int lastCellClickedY = -1;
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (button == 0) {
+            leftButtonDown = true;
+            int cellX = (int) (getMouseWorldPos().x / Level.CELL_WIDTH);
+            int cellY = (int) (getMouseWorldPos().y / Level.CELL_HEIGHT);
+            updateLevelWithClickAt(cellX, cellY);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (leftButtonDown && button == 0) {
+            leftButtonDown = false;
+            lastCellClickedX = -1;
+            lastCellClickedY = -1;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if (leftButtonDown) {
+            int cellX = (int) (getMouseWorldPos().x / Level.CELL_WIDTH);
+            int cellY = (int) (getMouseWorldPos().y / Level.CELL_HEIGHT);
+            if (cellX != lastCellClickedX || cellY != lastCellClickedY) {
+                updateLevelWithClickAt(cellX, cellY);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
+
+    // ------------------------------------------------------------------------
+    // Private Implementation
+    // ------------------------------------------------------------------------
+
+    private void updateLevelWithClickAt(int cellX, int cellY) {
+        // TODO: spawn validation (during editing or on play/save?)
+        setPropsAt(cellX, cellY, (isEraseMode()) ? Entity.Type.BLANK : getSelectedEntityType());
+        lastCellClickedX = cellX;
+        lastCellClickedY = cellY;
     }
 
 }
