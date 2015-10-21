@@ -12,12 +12,12 @@ public class Teleport extends BaseGameObject {
 
     Teleport otherEnd;
 
-    public Teleport(Vector2 p) {
-        super(p);
+    public Teleport(Vector2 p, GameObjectProps props) {
+        super(p, props);
         walkable = true;
         interactable = true;
         tex = Assets.teleportRegion;
-        modelInstance = new ModelInstance(Assets.cubeModel);
+        modelInstance = new ModelInstance(Assets.switchModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);
     }
 

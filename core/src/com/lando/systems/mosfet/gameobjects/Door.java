@@ -11,8 +11,8 @@ import com.lando.systems.mosfet.utils.Assets;
 public class Door extends BaseGameObject {
 
 
-    public Door(Vector2 p) {
-        super(p);
+    public Door(Vector2 p, GameObjectProps props) {
+        super(p, props);
         tex = Assets.doorClosedRegion;
         modelInstance = new ModelInstance(Assets.cubeModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);

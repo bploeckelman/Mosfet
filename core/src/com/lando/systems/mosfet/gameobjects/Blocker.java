@@ -8,8 +8,8 @@ import com.lando.systems.mosfet.utils.Assets;
  * Created by Doug on 9/24/2015.
  */
 public class Blocker extends BaseGameObject {
-    public Blocker(Vector2 p) {
-        super(p);
+    public Blocker(Vector2 p, GameObjectProps props) {
+        super(p, props);
         modelInstance = new ModelInstance(Assets.crateModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);
         stationary = false;

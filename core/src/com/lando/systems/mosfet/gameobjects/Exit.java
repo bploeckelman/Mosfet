@@ -11,8 +11,8 @@ import com.lando.systems.mosfet.utils.Assets;
  */
 public class Exit extends BaseGameObject {
 
-    public Exit(Vector2 p) {
-        super(p);
+    public Exit(Vector2 p, GameObjectProps props) {
+        super(p, props);
         tex = new TextureRegion(Assets.exitRegion);
         modelInstance = new ModelInstance(Assets.ladderModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);

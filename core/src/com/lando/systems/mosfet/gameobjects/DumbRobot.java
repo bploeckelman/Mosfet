@@ -11,12 +11,12 @@ import com.lando.systems.mosfet.utils.Assets;
  */
 public class DumbRobot extends BaseGameObject {
 
-    public DumbRobot(Vector2 p) {
-        this(p, DIR.UP);
+    public DumbRobot(Vector2 p, GameObjectProps props) {
+        this(p, props, DIR.UP);
     }
 
-    public DumbRobot(Vector2 p, DIR d){
-        super(p);
+    public DumbRobot(Vector2 p, GameObjectProps props, DIR d){
+        super(p, props);
         modelInstance = new ModelInstance(Assets.robotModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);
         stationary = false;

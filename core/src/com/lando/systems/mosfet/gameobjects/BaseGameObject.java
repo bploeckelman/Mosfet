@@ -35,9 +35,10 @@ public class BaseGameObject {
     MutableFloat rotationAngleDeg;
     public boolean interactable;
     public boolean usedThisTurn;
+    public GameObjectProps properties;
 
 
-    public BaseGameObject(Vector2 p) {
+    public BaseGameObject(Vector2 p, GameObjectProps props) {
         tex = new TextureRegion(Assets.wallRegion);
         pos = p;
         oldPos = p.cpy();
@@ -50,6 +51,7 @@ public class BaseGameObject {
         canRotate = false;
         rotationAngleDeg = new MutableFloat(getRotationFromDir());
         interactable = false;
+        properties = props;
     }
 
     public void linkObject(BaseGameObject obj) {

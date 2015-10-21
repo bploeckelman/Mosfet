@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -14,11 +15,13 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.GameObjectProps;
+import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.camera.OrthoCamController;
 import com.lando.systems.mosfet.utils.ui.ButtonInputListenerAdapter;
 import com.lando.systems.mosfet.utils.ui.InfoDialog;
@@ -50,6 +53,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
     boolean                linkMode;
     int                    linkageValue;
     Label                  linkageLabel;
+    GlyphLayout            glyphLayout;
 
     public LevelEditorScreen(MosfetGame game) {
         super(game);
@@ -63,6 +67,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         levelHeight = -1;
         linkMode = false;
         linkageValue = 1;
+        glyphLayout = new GlyphLayout();
 
         initializeUserInterface();
         enableInput();
@@ -90,17 +95,31 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
             // Draw the level
             batch.begin();
             batch.setProjectionMatrix(camera.combined);
+            float hw = Level.CELL_WIDTH / 2f;
+            float hh = Level.CELL_HEIGHT / 2f;
             int i = 0;
             for (GameObjectProps props : objectProps) {
                 float x = (i % levelWidth) * Level.CELL_WIDTH;
                 float y = (i / levelWidth) * Level.CELL_HEIGHT;
+                if (linkMode) batch.setColor(0.4f, 0.4f, 0.4f, 1f);
+                else          batch.setColor(Color.WHITE);
                 batch.draw(props.getType().getRegion(), x, y, Level.CELL_WIDTH, Level.CELL_HEIGHT);
+
+                int linkId = props.getLinkages();
+                if (linkMode && linkId != 0) {
+                    final String linkIdStr = "" + linkId;
+                    glyphLayout.setText(Assets.font, linkIdStr);
+                    // TODO: set color based on linkId
+                    batch.setColor(Color.WHITE);
+                    Assets.font.draw(batch, linkIdStr, x + hw - glyphLayout.width / 2f, y + hh + glyphLayout.height / 2f);
+                }
                 ++i;
             }
             batch.end();
 
             // Draw the user interface
 //            stage.setDebugAll(true);
+            batch.setColor(Color.WHITE);
             stage.draw();
         }
         sceneFrameBuffer.end();
@@ -157,9 +176,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         objectProps.clear();
         int numCells = level.getWidth() * level.getHeight();
         for (int i = 0; i < numCells; ++i) {
-            final int cellValue = level.getCellAt(i);
-            final Entity.Type entityType = Entity.Type.getTypeForValue(cellValue);
-            objectProps.add(new GameObjectProps(entityType));
+            objectProps.add(new GameObjectProps(level.getCellAt(i)));
         }
 
         camera.position.set((levelWidth  * Level.CELL_WIDTH  * camera.zoom) / 2f,
@@ -247,6 +264,19 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
         linkageLabel = new Label("#" + linkageValue, skin);
         linkageLabel.setColor(Color.DARK_GRAY);
+        // TODO: handle changing link id more effectively
+        linkageLabel.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                // Increment link id, but keep within 8 bits
+                if (++linkageValue > 255) {
+                    linkageValue -= 255;
+                }
+                linkageLabel.setColor((linkMode) ? Color.YELLOW : Color.DARK_GRAY);
+                linkageLabel.setText("#" + linkageValue);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+        });
 
         final CheckBox linkModeToggle = new CheckBox("Link Mode", skin);
         linkModeToggle.addListener(new ButtonInputListenerAdapter() {
@@ -343,7 +373,18 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
             leftButtonDown = true;
             int cellX = (int) (getMouseWorldPos().x / Level.CELL_WIDTH);
             int cellY = (int) (getMouseWorldPos().y / Level.CELL_HEIGHT);
-            updateLevelWithClickAt(cellX, cellY);
+
+            if (linkMode) {
+                if (cellX >= 0 && cellX < Level.CELL_WIDTH && cellY >= 0 && cellY < Level.CELL_HEIGHT) {
+                    int index = cellY * levelWidth + cellX;
+                    final GameObjectProps props = objectProps.get(index);
+                    props.linkages = linkageValue;
+                    props.updateBits();
+                }
+            } else {
+                updateLevelWithClickAt(cellX, cellY);
+            }
+
             return true;
         }
         return false;
@@ -362,7 +403,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (leftButtonDown) {
+        if (leftButtonDown && !linkMode) {
             int cellX = (int) (getMouseWorldPos().x / Level.CELL_WIDTH);
             int cellY = (int) (getMouseWorldPos().y / Level.CELL_HEIGHT);
             if (cellX != lastCellClickedX || cellY != lastCellClickedY) {

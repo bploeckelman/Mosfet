@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
+import com.lando.systems.mosfet.world.Entity;
 
 /**
  * Created by Doug on 9/10/2015.
@@ -14,7 +15,7 @@ import com.lando.systems.mosfet.utils.Assets;
 public class Player extends BaseGameObject {
 
     public Player(Vector2 p, DIR d){
-        super(p);
+        super(p, new GameObjectProps(Entity.Type.BLANK, d, 0));
         tex = new TextureRegion(Assets.playerRegion);
         stationary = false;
         canRotate = true;

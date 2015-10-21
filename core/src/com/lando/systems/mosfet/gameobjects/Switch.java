@@ -23,8 +23,8 @@ public class Switch extends  BaseGameObject {
     BaseGameObject interactingObject;
     MutableFloat timer;
 
-    public Switch(Vector2 p) {
-        super(p);
+    public Switch(Vector2 p, GameObjectProps props) {
+        super(p, props);
         tex = Assets.switchRegion;
         modelInstance = new ModelInstance(Assets.switchModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);

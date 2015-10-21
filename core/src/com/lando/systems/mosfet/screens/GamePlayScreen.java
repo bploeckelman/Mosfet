@@ -138,18 +138,19 @@ public class GamePlayScreen extends GameScreen {
             for (int x = 0; x < level.getWidth(); ++x) {
                 pos.set(x, y);
 
-                final Entity.Type entityType = Entity.Type.getTypeForValue(level.getCellAt(x, y));
+                final GameObjectProps objectProps = new GameObjectProps(level.getCellAt(x, y));
+                final Entity.Type entityType = objectProps.getType();
                 switch (entityType) {
-                    case SPAWN:        gameObjects.add(new Spawn(pos.cpy())); break;
-                    case WALL:         gameObjects.add(new Wall(pos.cpy())); break;
-                    case EXIT:         gameObjects.add(new Exit((pos.cpy()))); break;
-                    case BLOCKER_PULL: gameObjects.add(new BlockerPull(pos.cpy())); break;
-                    case BLOCKER_PUSH: gameObjects.add(new BlockerPush(pos.cpy())); break;
-                    case DOOR:         gameObjects.add(new Door(pos.cpy())); break;
-                    case DUMB_ROBOT:   gameObjects.add(new DumbRobot(pos.cpy())); break;
-                    case SPINNER:      gameObjects.add(new Spinner(pos.cpy())); break;
-                    case SWITCH:       gameObjects.add(new Switch(pos.cpy())); break;
-                    case TELEPORT:     gameObjects.add(new Teleport(pos.cpy())); break;
+                    case SPAWN:        gameObjects.add(new Spawn(pos.cpy(),       objectProps)); break;
+                    case WALL:         gameObjects.add(new Wall(pos.cpy(),        objectProps)); break;
+                    case EXIT:         gameObjects.add(new Exit((pos.cpy()),      objectProps)); break;
+                    case BLOCKER_PULL: gameObjects.add(new BlockerPull(pos.cpy(), objectProps)); break;
+                    case BLOCKER_PUSH: gameObjects.add(new BlockerPush(pos.cpy(), objectProps)); break;
+                    case DOOR:         gameObjects.add(new Door(pos.cpy(),        objectProps)); break;
+                    case DUMB_ROBOT:   gameObjects.add(new DumbRobot(pos.cpy(),   objectProps)); break;
+                    case SPINNER:      gameObjects.add(new Spinner(pos.cpy(),     objectProps)); break;
+                    case SWITCH:       gameObjects.add(new Switch(pos.cpy(),      objectProps)); break;
+                    case TELEPORT:     gameObjects.add(new Teleport(pos.cpy(),    objectProps)); break;
                 }
 
                 if (entityType != Entity.Type.WALL) {
@@ -165,6 +166,18 @@ public class GamePlayScreen extends GameScreen {
                 else if (entityType == Entity.Type.EXIT) {
                     final PointLight pointLight = new PointLight().set(new Color(0f, 1f, 0f, 1f), pos.x, pos.y, 1f, 2f);
                     Assets.environment.add(pointLight);
+                }
+            }
+        }
+
+        // Link game objects
+        for (int i = 0; i < gameObjects.size; ++i) {
+            final BaseGameObject gameObject = gameObjects.get(i);
+            for (int j = 0; j < gameObjects.size; ++j) {
+                final BaseGameObject otherObject = gameObjects.get(j);
+                if (gameObject == otherObject) continue;
+                if (gameObject.properties.getLinkages() == otherObject.properties.getLinkages()) {
+                    gameObject.linkObject(otherObject);
                 }
             }
         }

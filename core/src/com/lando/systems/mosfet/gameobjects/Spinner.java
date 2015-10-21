@@ -9,8 +9,8 @@ import com.lando.systems.mosfet.utils.Assets;
  * Created by Doug on 9/24/2015.
  */
 public class Spinner extends BaseGameObject {
-    public Spinner(Vector2 p) {
-        super(p);
+    public Spinner(Vector2 p, GameObjectProps props) {
+        super(p, props);
         modelInstance = new ModelInstance(Assets.cubeModel);
         modelInstance.transform.setToTranslation(p.x, p.y, 0);
         walkable = true;
