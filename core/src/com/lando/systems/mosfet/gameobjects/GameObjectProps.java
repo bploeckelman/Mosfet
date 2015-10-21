@@ -29,6 +29,9 @@ public class GameObjectProps {
 
     public GameObjectProps(int bits) {
         this.bits = bits;
+        entityType = getType();
+        direction = getDir();
+        linkages = getLinkages();
     }
 
     public GameObjectProps(Entity.Type type) {
@@ -60,6 +63,10 @@ public class GameObjectProps {
         bits |= entityType.getValue();
 
         return bits;
+    }
+
+    public void updateBits() {
+        getBits();
     }
 
     public Entity.Type getType() {
