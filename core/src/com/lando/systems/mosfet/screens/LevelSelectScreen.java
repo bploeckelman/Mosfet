@@ -53,7 +53,7 @@ public class LevelSelectScreen extends GameScreen {
     }
 
     public void render(float dt){
-        Gdx.gl.glClearColor(1f, 0.2f, 0.6f, 1f);
+        Gdx.gl.glClearColor(0f, 0.2f, 0.6f, 1f);
 
         update(dt);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);

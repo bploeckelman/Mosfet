@@ -13,6 +13,10 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.useWakelock = true;
+		config.r = 8;
+		config.g = 8;
+		config.b = 8;
+		config.numSamples = 4;
 		WindowManager.LayoutParams layout = getWindow().getAttributes();
 		layout.screenBrightness = 1f;
 		getWindow().setAttributes(layout);

@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -73,7 +74,7 @@ public class GamePlayScreen extends GameScreen {
         int levelWidth = level.getWidth();
         int levelHeight = level.getHeight();
 
-        Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
+        Gdx.gl.glClearColor(0f, 0.2f, 0.6f, 1f);
 
         // Fit the map while maintaining the crrect aspect ratio
         float aspect = Config.width/(float)Config.height;
@@ -115,6 +116,7 @@ public class GamePlayScreen extends GameScreen {
         resetLevel();
 
         sceneFrameBuffer = new FrameBuffer(Format.RGBA8888, Config.width, Config.height, true);
+        sceneFrameBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         sceneRegion = new TextureRegion(sceneFrameBuffer.getColorBufferTexture());
         sceneRegion.flip(false, true);
         movementDelay = 0;
@@ -126,7 +128,7 @@ public class GamePlayScreen extends GameScreen {
 
         rotateCameraLeftButton = new Rectangle(50, uiCamera.viewportHeight - 100, 50, 50);
         rotateCameraRightButton = new Rectangle(uiCamera.viewportWidth -100, uiCamera.viewportHeight - 100, 50, 50);
-        background = new Background();
+        background = new Background(new Vector2(levelWidth, levelHeight));
     }
 
     private void resetLevel(){
@@ -317,8 +319,8 @@ public class GamePlayScreen extends GameScreen {
             // Draw the world
             if (renderAs3d) {
                 Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+                background.render(perspectiveCamera);
                 Assets.modelBatch.begin(perspectiveCamera);
-                background.render(Assets.modelBatch);
                 Assets.modelBatch.render(Assets.coordModelInstance);
                 Assets.modelBatch.render(floorCellInstances, Assets.environment);
                 for (BaseGameObject obj : gameObjects) {

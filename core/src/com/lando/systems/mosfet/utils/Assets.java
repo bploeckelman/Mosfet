@@ -5,6 +5,7 @@ import aurelienribon.tweenengine.TweenManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
@@ -32,7 +34,7 @@ import com.lando.systems.mosfet.world.Level;
  * Brian Ploeckelman created on 9/10/2015.
  */
 public class Assets {
-
+    public static DefaultShader.Config perfragLightConfig;
     public static final float MOVE_DELAY = .5f;
 
     public static TweenManager tween;
@@ -87,6 +89,12 @@ public class Assets {
     public static Array<Level> levels;
 
     public static void load() {
+
+        perfragLightConfig = new DefaultShader.Config();
+        perfragLightConfig.vertexShader = Gdx.files.internal("shaders/backgroundvertex.glsl").readString();
+        perfragLightConfig.fragmentShader = Gdx.files.internal("shaders/backgroundfrag.glsl").readString();
+
+
         if (tween == null) {
             tween = new TweenManager();
             Tween.registerAccessor(Color.class, new ColorAccessor());
@@ -105,6 +113,7 @@ public class Assets {
         testTexture = new Texture("badlogic.jpg");
         circleTexture = new Texture("circle.png");
         floorTexture = new Texture("floor-diffuse.png");
+        floorTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         gearTexture = new Texture("gear.png");
 
         upArrow = new Texture("up-arrow.png");
@@ -169,12 +178,16 @@ public class Assets {
         coordModel = modelBuilder.createXYZCoordinates(1f, coordMaterial, coordAttribs);
         coordModelInstance = new ModelInstance(coordModel);
 
+        ModelLoader.ModelParameters modelParam = new ModelLoader.ModelParameters();
+        modelParam.textureParameter.magFilter = Texture.TextureFilter.MipMapLinearNearest;
+        modelParam.textureParameter.minFilter = Texture.TextureFilter.MipMapLinearNearest;
+        modelParam.textureParameter.genMipMaps = true;
         assetManager = new AssetManager();
-        assetManager.load("models/cube.g3dj", Model.class);
-        assetManager.load("models/robot-head.g3dj", Model.class);
-        assetManager.load("models/ladder.g3dj", Model.class);
-        assetManager.load("models/crate.g3dj", Model.class);
-        assetManager.load("models/switch1.g3dj", Model.class);
+        assetManager.load("models/cube.g3dj", Model.class, modelParam);
+        assetManager.load("models/robot-head.g3dj", Model.class, modelParam);
+        assetManager.load("models/ladder.g3dj", Model.class, modelParam);
+        assetManager.load("models/crate.g3dj", Model.class, modelParam);
+        assetManager.load("models/switch1.g3dj", Model.class, modelParam);
         assetManager.finishLoading();
         cubeModel = assetManager.get("models/cube.g3dj", Model.class);
         robotModel = assetManager.get("models/robot-head.g3dj", Model.class);
