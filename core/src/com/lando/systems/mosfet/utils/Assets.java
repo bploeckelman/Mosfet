@@ -73,11 +73,13 @@ public class Assets {
     public static Model         cubeModel;
     public static Model         robotModel;
     public static Model         floorModel;
+    public static Model         backgroundModel;
     public static Model         coordModel;
     public static Model         ladderModel;
     public static Model         crateModel;
     public static Model         switchModel;
     public static ModelInstance floorModelInstance;
+    public static ModelInstance backgroundModelInstance;
     public static ModelInstance coordModelInstance;
     public static Environment   environment;
 
@@ -146,6 +148,21 @@ public class Assets {
                 floorAttribs
         );
         floorModelInstance = new ModelInstance(floorModel);
+
+        final Material backgroundMaterial = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+        final long backgroundAttribs = VertexAttributes.Usage.Position
+                | VertexAttributes.Usage.Normal
+                | VertexAttributes.Usage.TextureCoordinates;
+        backgroundModel = modelBuilder.createRect(
+                -100.5f, -100.5f, -1f,
+                100.5f, -100.5f, -1f,
+                100.5f,  100.5f, -1f,
+                -100.5f,  100.5f, -1f,
+                0f,    0f, 1f,
+                backgroundMaterial,
+                backgroundAttribs
+        );
+        backgroundModelInstance = new ModelInstance(backgroundModel);
 
         final Material coordMaterial = new Material(ColorAttribute.createDiffuse(1f, 1f, 1f, 1f));
         final long coordAttribs = VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorUnpacked;

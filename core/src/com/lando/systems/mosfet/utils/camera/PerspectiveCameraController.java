@@ -145,6 +145,10 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
         camera.update(true);
     }
 
+    public void addRotation(float amount){
+        rotationAmount += amount;
+    }
+
     public boolean scrolled (int amount) {
         camera.fieldOfView = MathUtils.clamp(camera.fieldOfView + amount, 15, 90);
         return true;
@@ -200,7 +204,9 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-
+        if (true){
+            return false;
+        }
         float initalAngle = (float)(Math.toDegrees(Math.atan2(initialPointer1.y - initialPointer2.y, initialPointer1.x - initialPointer2.x)));
         float newAngle = (float)(Math.toDegrees(Math.atan2(pointer1.y - pointer2.y, pointer1.x - pointer2.x)));
         float dif = newAngle - initalAngle;

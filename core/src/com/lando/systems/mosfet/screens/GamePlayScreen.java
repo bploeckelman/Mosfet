@@ -29,6 +29,7 @@ import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.accessors.Vector3Accessor;
 import com.lando.systems.mosfet.utils.camera.PerspectiveCameraController;
+import com.lando.systems.mosfet.world.Background;
 import com.lando.systems.mosfet.world.Entity;
 import com.lando.systems.mosfet.world.Level;
 
@@ -43,12 +44,15 @@ public class GamePlayScreen extends GameScreen {
     Level                   level;
     Array<BaseGameObject>   gameObjects;
     Array<ModelInstance>    floorCellInstances;
+    Background              background;
     Player                  player;
     float                   movementDelay;
     Rectangle               forwardButton;
     Rectangle               backwardButton;
     Rectangle               turnRightButton;
     Rectangle               turnLeftButton;
+    Rectangle               rotateCameraLeftButton;
+    Rectangle               rotateCameraRightButton;
     PerspectiveCamera       perspectiveCamera;
     boolean                 renderAs3d;
 
@@ -69,7 +73,7 @@ public class GamePlayScreen extends GameScreen {
         int levelWidth = level.getWidth();
         int levelHeight = level.getHeight();
 
-        Gdx.gl.glClearColor(0f, 191f / 255f, 1f, 1f);
+        Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
 
         // Fit the map while maintaining the crrect aspect ratio
         float aspect = Config.width/(float)Config.height;
@@ -119,11 +123,15 @@ public class GamePlayScreen extends GameScreen {
         backwardButton = new Rectangle(uiCamera.viewportWidth - 125, 50, 50, 50);
         turnRightButton = new Rectangle(uiCamera.viewportWidth - 100, 100, 50, 50);
         turnLeftButton = new Rectangle(uiCamera.viewportWidth - 150, 100, 50, 50);
+
+        rotateCameraLeftButton = new Rectangle(50, uiCamera.viewportHeight - 100, 50, 50);
+        rotateCameraRightButton = new Rectangle(uiCamera.viewportWidth -100, uiCamera.viewportHeight - 100, 50, 50);
+        background = new Background();
     }
 
     private void resetLevel(){
         Assets.environment.clear();
-        Assets.environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.2f, 0.2f, 1f));
+        Assets.environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.5f, 0.5f, 0.5f, 1f));
 
         // Regenerate model instances for the level geometry
         floorCellInstances = new Array<ModelInstance>();
@@ -256,6 +264,12 @@ public class GamePlayScreen extends GameScreen {
                 uiCamera.unproject(touchPoint3);
                 touchPoint = new Vector2(touchPoint3.x, touchPoint3.y);
             }
+            if (rotateCameraLeftButton.contains(touchPoint)){
+                perCamController.addRotation(-90);
+            }
+            if (rotateCameraRightButton.contains(touchPoint)){
+                perCamController.addRotation(90);
+            }
             if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP) || forwardButton.contains(touchPoint)){
                 for (BaseGameObject obj : gameObjects){
                     obj.move(true, this);
@@ -284,6 +298,8 @@ public class GamePlayScreen extends GameScreen {
                 }
                 movementDelay = Assets.MOVE_DELAY;
             }
+
+
         }
         for (BaseGameObject obj : gameObjects) {
             obj.update(delta);
@@ -302,6 +318,7 @@ public class GamePlayScreen extends GameScreen {
             if (renderAs3d) {
                 Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
                 Assets.modelBatch.begin(perspectiveCamera);
+                background.render(Assets.modelBatch);
                 Assets.modelBatch.render(Assets.coordModelInstance);
                 Assets.modelBatch.render(floorCellInstances, Assets.environment);
                 for (BaseGameObject obj : gameObjects) {
@@ -326,6 +343,9 @@ public class GamePlayScreen extends GameScreen {
             batch.draw(Assets.downArrow, backwardButton.x, backwardButton.y, backwardButton.width, backwardButton.height);
             batch.draw(Assets.leftArrow, turnLeftButton.x, turnLeftButton.y, turnLeftButton.width, turnLeftButton.height);
             batch.draw(Assets.rightArrow, turnRightButton.x, turnRightButton.y, turnRightButton.width, turnRightButton.height);
+
+            batch.draw(Assets.leftArrow, rotateCameraLeftButton.x, rotateCameraLeftButton.y, rotateCameraLeftButton.width, rotateCameraLeftButton.height);
+            batch.draw(Assets.rightArrow, rotateCameraRightButton.x, rotateCameraRightButton.y, rotateCameraRightButton.width, rotateCameraRightButton.height);
 
             batch.end();
         }
