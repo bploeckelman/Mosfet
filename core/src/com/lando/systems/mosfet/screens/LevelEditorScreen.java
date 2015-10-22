@@ -349,6 +349,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         int cell = 0;
         for (final Entity.Type entityType : Entity.Type.values()) {
             final ImageButton typeButton = new ImageButton(new TextureRegionDrawable(entityType.getRegion()));
+            typeButton.getImage().setFillParent(true);
             typeButton.addListener(new TextTooltip(entityType.toString(), skin));
             typeButton.addListener(new ClickListener() {
                 @Override
@@ -372,7 +373,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
                          .start(Assets.tween);
                 }
             });
-            tilePickerTable.left().add(typeButton).expand();
+            tilePickerTable.left().add(typeButton).width(35f).height(35f).expand().fill().pad(5f);
 
             if (++cell % 2 == 0) {
                 tilePickerTable.row();
