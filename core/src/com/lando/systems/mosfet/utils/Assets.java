@@ -50,6 +50,7 @@ public class Assets {
     public static Texture floorTexture;
     public static Texture gearTexture;
     public static Texture switchActiveTexture;
+    public static Texture uiSpritesheetTexture;
     public static Texture spritesheetTexturePlaceholder;
     public static Texture upArrow;
     public static Texture downArrow;
@@ -71,6 +72,22 @@ public class Assets {
     public static TextureRegion     spinnerRegion;
     public static TextureRegion     switchRegion;
     public static TextureRegion     teleportRegion;
+
+    public static TextureRegion[][] uiSpritesheetRegions;
+    public static TextureRegion uiPlayButtonRegion;
+    public static TextureRegion uiPlayButtonDownRegion;
+    public static TextureRegion uiEraseButtonRegion;
+    public static TextureRegion uiEraseButtonDownRegion;
+    public static TextureRegion uiEraseButtonCheckedRegion;
+    public static TextureRegion uiLinkButtonRegion;
+    public static TextureRegion uiLinkButtonDownRegion;
+    public static TextureRegion uiLinkButtonCheckedRegion;
+    public static TextureRegion uiNewButtonRegion;
+    public static TextureRegion uiNewButtonDownRegion;
+    public static TextureRegion uiSaveButtonRegion;
+    public static TextureRegion uiSaveButtonDownRegion;
+    public static TextureRegion uiLoadButtonRegion;
+    public static TextureRegion uiLoadButtonDownRegion;
 
     public static Model         cubeModel;
     public static Model         robotModel;
@@ -97,6 +114,7 @@ public class Assets {
 
         if (tween == null) {
             tween = new TweenManager();
+            Tween.setCombinedAttributesLimit(4);
             Tween.registerAccessor(Color.class, new ColorAccessor());
             Tween.registerAccessor(Rectangle.class, new RectangleAccessor());
             Tween.registerAccessor(Vector2.class, new Vector2Accessor());
@@ -120,6 +138,7 @@ public class Assets {
         downArrow = new Texture("down-arrow.png");
         rightArrow = new Texture("right-arrow.png");
         leftArrow = new Texture("left-arrow.png");
+        uiSpritesheetTexture = new Texture("spritesheet.png");
         spritesheetTexturePlaceholder = new Texture("spritesheet-placeholders.png");
         switchActiveTexture = new Texture("switch1-active-diffuse.png");
 
@@ -138,6 +157,22 @@ public class Assets {
         spinnerRegion         = spritePlaceholderRegions[1][2];
         switchRegion          = spritePlaceholderRegions[1][3];
         teleportRegion        = spritePlaceholderRegions[1][4];
+
+        uiSpritesheetRegions = TextureRegion.split(uiSpritesheetTexture, 32, 32);
+        uiPlayButtonRegion         = uiSpritesheetRegions[0][0];
+        uiPlayButtonDownRegion     = uiSpritesheetRegions[1][0];
+        uiEraseButtonRegion        = uiSpritesheetRegions[0][1];
+        uiEraseButtonDownRegion    = uiSpritesheetRegions[1][1];
+        uiEraseButtonCheckedRegion = uiSpritesheetRegions[2][1];
+        uiLinkButtonRegion         = uiSpritesheetRegions[0][2];
+        uiLinkButtonDownRegion     = uiSpritesheetRegions[1][2];
+        uiLinkButtonCheckedRegion  = uiSpritesheetRegions[2][2];
+        uiNewButtonRegion          = uiSpritesheetRegions[0][3];
+        uiNewButtonDownRegion      = uiSpritesheetRegions[1][3];
+        uiSaveButtonRegion         = uiSpritesheetRegions[0][4];
+        uiSaveButtonDownRegion     = uiSpritesheetRegions[1][4];
+        uiLoadButtonRegion         = uiSpritesheetRegions[0][5];
+        uiLoadButtonDownRegion     = uiSpritesheetRegions[1][5];
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.2f, 0.2f, 1f));
@@ -216,6 +251,7 @@ public class Assets {
         floorTexture.dispose();
         gearTexture.dispose();
         switchActiveTexture.dispose();
+        uiSpritesheetTexture.dispose();
         spritesheetTexturePlaceholder.dispose();
         assetManager.dispose();
     }

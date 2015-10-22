@@ -1,5 +1,9 @@
 package com.lando.systems.mosfet.screens;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.equations.Sine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -10,18 +14,19 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.lando.systems.mosfet.Config;
 import com.lando.systems.mosfet.MosfetGame;
 import com.lando.systems.mosfet.gameobjects.GameObjectProps;
 import com.lando.systems.mosfet.utils.Assets;
+import com.lando.systems.mosfet.utils.accessors.RectangleAccessor;
 import com.lando.systems.mosfet.utils.camera.OrthoCamController;
 import com.lando.systems.mosfet.utils.ui.ButtonInputListenerAdapter;
 import com.lando.systems.mosfet.utils.ui.InfoDialog;
@@ -36,13 +41,19 @@ import com.lando.systems.mosfet.world.Level;
  */
 public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
+    private static final float UI_MARGIN              = 15f;
+    private static final float UI_PICKER_MARGIN       = 10f;
+    private static final float TWEEN_TIME_PICKER_HIDE = 0.3f;
+    private static final float TWEEN_TIME_PICKER_SHOW = 0.15f;
+
     FrameBuffer            sceneFrameBuffer;
     TextureRegion          sceneRegion;
     Skin                   skin;
     Stage                  stage;
-//    Window                 windowMenu;
-    Table                  windowMenu;
-    Window                 windowToolbar;
+    Table                  headerTable;
+    Table                  footerTable;
+    ScrollPane             tilePickerPane;
+    ImageButton            brushButton;
     InfoDialog             infoDialog;
     OrthographicCamera     uiCamera;
     Entity.Type            selectedEntityType;
@@ -54,6 +65,8 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
     int                    linkageValue;
     Label                  linkageLabel;
     GlyphLayout            glyphLayout;
+    Rectangle              tilePickerBounds;
+    Rectangle              tilePickerShowBounds;
 
     public LevelEditorScreen(MosfetGame game) {
         super(game);
@@ -81,6 +94,8 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
     @Override
     public void update(float delta) {
         super.update(delta);
+        tilePickerPane.setPosition(tilePickerBounds.x, tilePickerBounds.y);
+        tilePickerPane.setSize(tilePickerBounds.width, tilePickerBounds.height);
         stage.act(delta);
     }
 
@@ -102,7 +117,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
                 float x = (i % levelWidth) * Level.CELL_WIDTH;
                 float y = (i / levelWidth) * Level.CELL_HEIGHT;
                 if (linkMode) batch.setColor(0.4f, 0.4f, 0.4f, 1f);
-                else          batch.setColor(Color.WHITE);
+                else batch.setColor(Color.WHITE);
                 batch.draw(props.getType().getRegion(), x, y, Level.CELL_WIDTH, Level.CELL_HEIGHT);
 
                 int linkId = props.getLinkages();
@@ -202,27 +217,16 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         uiCamera.update(true);
         stage = new Stage(new StretchViewport(Config.width, Config.height));
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-
-//        windowMenu = new Window("LevelEd - Main Menu", skin);
-//        windowMenu.setMovable(false);
-//        windowMenu.setResizable(false);
-        windowMenu = new Table(skin);
-        windowMenu.setSize(uiCamera.viewportWidth, 60f);
-        windowMenu.setPosition(0f, uiCamera.viewportHeight - 60f);
-
-        windowToolbar = new Window("Toolbar", skin);
-        windowToolbar.setMovable(false);
-        windowToolbar.setResizable(false);
-        windowToolbar.setSize(uiCamera.viewportWidth, 60f);
-        windowToolbar.setPosition(0f, 0f);
-
         infoDialog = new InfoDialog("Info", skin);
 
-        final TextButton playButton   = new TextButton("Play!", skin);
-        final TextButton newLevelBtn  = new TextButton("New", skin);
-        final TextButton saveLevelBtn = new TextButton("Save", skin);
-        final TextButton loadLevelBtn = new TextButton("Load", skin);
+        // Initialize header table --------------------------------------------
 
+        headerTable = new Table(skin);
+        headerTable.setSize(uiCamera.viewportWidth, 60f);
+        headerTable.setPosition(0f, uiCamera.viewportHeight - 60f);
+
+        final ImageButton playButton = new ImageButton(new TextureRegionDrawable(Assets.uiPlayButtonRegion),
+                                                       new TextureRegionDrawable(Assets.uiPlayButtonDownRegion));
         playButton.addListener(new ButtonInputListenerAdapter() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -233,33 +237,59 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
                 game.setScreen(new GamePlayScreen(game, generateLevel()));
             }
         });
-        newLevelBtn.addListener(new ButtonInputListenerAdapter() {
+        final ImageButton newButton = new ImageButton(new TextureRegionDrawable(Assets.uiNewButtonRegion),
+                                                      new TextureRegionDrawable(Assets.uiNewButtonDownRegion));
+        newButton.addListener(new TextTooltip("New Level", skin));
+        newButton.addListener(new ButtonInputListenerAdapter() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 new NewLevelDialog("New Level", skin, LevelEditorScreen.this).show(stage);
             }
         });
-        saveLevelBtn.addListener(new ButtonInputListenerAdapter() {
+        final ImageButton saveButton = new ImageButton(new TextureRegionDrawable(Assets.uiSaveButtonRegion),
+                                                       new TextureRegionDrawable(Assets.uiSaveButtonDownRegion));
+        saveButton.addListener(new TextTooltip("Save Level", skin));
+        saveButton.addListener(new ButtonInputListenerAdapter() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 new SaveLevelDialog("Save Level", skin, LevelEditorScreen.this).show(stage);
             }
         });
-        loadLevelBtn.addListener(new ButtonInputListenerAdapter() {
+
+        final ImageButton loadButton = new ImageButton(new TextureRegionDrawable(Assets.uiLoadButtonRegion),
+                                                       new TextureRegionDrawable(Assets.uiLoadButtonDownRegion));
+        loadButton.addListener(new TextTooltip("Load Level", skin));
+        loadButton.addListener(new ButtonInputListenerAdapter() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 new LoadLevelDialog("Load Level", skin, LevelEditorScreen.this).show(stage);
             }
         });
 
-        final CheckBox eraseModeToggle = new CheckBox("Erase Mode", skin);
-        eraseModeToggle.addListener(new ButtonInputListenerAdapter() {
+        headerTable.left().padLeft(UI_MARGIN);
+        headerTable.left().add(playButton).expandX();
+        headerTable.left().add(newButton).expandX();
+        headerTable.left().add(saveButton).expandX();
+        headerTable.left().add(loadButton).expandX();
+        headerTable.left().padRight(UI_MARGIN);
+        headerTable.row();
+
+        // Initialize footer table --------------------------------------------
+
+        footerTable = new Table(skin);
+        footerTable.setSize(uiCamera.viewportWidth, 60f);
+        footerTable.setPosition(0f, 0f);
+
+        final ImageButton eraseModeButton = new ImageButton(new TextureRegionDrawable(Assets.uiEraseButtonRegion),
+                                                            new TextureRegionDrawable(Assets.uiEraseButtonDownRegion),
+                                                            new TextureRegionDrawable(Assets.uiEraseButtonCheckedRegion));
+        eraseModeButton.addListener(new TextTooltip("Erase Mode", skin));
+        eraseModeButton.addListener(new ButtonInputListenerAdapter() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                eraseMode = eraseModeToggle.isChecked();
+                eraseMode = eraseModeButton.isChecked();
             }
         });
-        eraseModeToggle.setChecked(false);
         eraseMode = false;
 
         linkageLabel = new Label("#" + linkageValue, skin);
@@ -278,45 +308,103 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
             }
         });
 
-        final CheckBox linkModeToggle = new CheckBox("Link Mode", skin);
-        linkModeToggle.addListener(new ButtonInputListenerAdapter() {
+        final ImageButton linkModeButton = new ImageButton(new TextureRegionDrawable(Assets.uiLinkButtonRegion),
+                                                           new TextureRegionDrawable(Assets.uiLinkButtonDownRegion),
+                                                           new TextureRegionDrawable(Assets.uiLinkButtonCheckedRegion));
+        linkModeButton.addListener(new TextTooltip("Link Mode", skin));
+        linkModeButton.addListener(new ButtonInputListenerAdapter() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                linkMode = linkModeToggle.isChecked();
+                linkMode = linkModeButton.isChecked();
                 linkageLabel.setColor((linkMode) ? Color.YELLOW : Color.DARK_GRAY);
                 linkageLabel.setText("#" + linkageValue);
             }
         });
-        linkModeToggle.setChecked(false);
         linkMode = false;
 
-        final SelectBox<Entity.Type> entityTypeSelect = new SelectBox<Entity.Type>(skin);
-        entityTypeSelect.setItems(Entity.Type.values());
-        entityTypeSelect.addListener(new ChangeListener() {
+        // Initialize tile picker ---------------------------------------------
+
+        selectedEntityType = Entity.Type.BLANK;
+        brushButton = new ImageButton(new TextureRegionDrawable(Entity.Type.BLANK.getRegion()));
+        brushButton.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                selectedEntityType = entityTypeSelect.getSelected();
-                eraseModeToggle.setChecked(false);
-                eraseMode = false;
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                tilePickerPane.setVisible(true);
+
+                Tween.to(tilePickerBounds, RectangleAccessor.XYWH, TWEEN_TIME_PICKER_SHOW)
+                     .target(tilePickerShowBounds.x,
+                             tilePickerShowBounds.y,
+                             tilePickerShowBounds.width,
+                             tilePickerShowBounds.height)
+                     .ease(Sine.OUT)
+                     .start(Assets.tween);
+
+                return super.touchDown(event, x, y, pointer, button);
             }
         });
-        entityTypeSelect.setSelected(Entity.Type.BLANK);
-        selectedEntityType = Entity.Type.BLANK;
+        brushButton.setSize(64, 64);
 
-        windowMenu.left().add(playButton).fillX().expandX().padRight(15f);
-        windowMenu.left().add(newLevelBtn);
-        windowMenu.left().add(saveLevelBtn);
-        windowMenu.left().add(loadLevelBtn);
-        windowMenu.row();
+        final Table tilePickerTable = new Table(skin);
+        tilePickerTable.pad(UI_PICKER_MARGIN);
+        int cell = 0;
+        for (final Entity.Type entityType : Entity.Type.values()) {
+            final ImageButton typeButton = new ImageButton(new TextureRegionDrawable(entityType.getRegion()));
+            typeButton.addListener(new TextTooltip(entityType.toString(), skin));
+            typeButton.addListener(new ClickListener() {
+                @Override
+                public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                    super.touchUp(event, x, y, pointer, button);
+                    selectedEntityType = entityType;
 
-        windowToolbar.left().add(entityTypeSelect).fillX().expandX().padRight(15f);
-        windowToolbar.left().add(eraseModeToggle).padRight(15f);
-        windowToolbar.left().add(linkModeToggle).padRight(5f);
-        windowToolbar.left().add(linkageLabel).padRight(5f);
-        windowToolbar.row();
+                    final ImageButton.ImageButtonStyle style = brushButton.getStyle();
+                    style.imageUp = new TextureRegionDrawable(entityType.getRegion());
+                    brushButton.setStyle(style);
 
-        stage.addActor(windowMenu);
-        stage.addActor(windowToolbar);
+                    Tween.to(tilePickerBounds, RectangleAccessor.XYWH, TWEEN_TIME_PICKER_HIDE)
+                         .target(brushButton.getX(), brushButton.getY(), brushButton.getWidth(), brushButton.getHeight())
+                         .ease(Sine.OUT)
+                         .setCallback(new TweenCallback() {
+                             @Override
+                             public void onEvent(int i, BaseTween<?> baseTween) {
+                                 tilePickerPane.setVisible(false);
+                             }
+                         })
+                         .start(Assets.tween);
+                }
+            });
+            tilePickerTable.left().add(typeButton).expand();
+
+            if (++cell % 2 == 0) {
+                tilePickerTable.row();
+                tilePickerTable.pad(UI_PICKER_MARGIN);
+            }
+        }
+
+        tilePickerBounds = new Rectangle(uiCamera.viewportWidth  / 2f - uiCamera.viewportWidth  / 6f,
+                                         uiCamera.viewportHeight / 2f - uiCamera.viewportHeight / 6f,
+                                         uiCamera.viewportWidth  / 3f,
+                                         uiCamera.viewportHeight / 3f);
+        tilePickerShowBounds = new Rectangle(tilePickerBounds);
+
+        tilePickerPane = new ScrollPane(tilePickerTable, skin);
+        tilePickerPane.setVisible(false);
+        tilePickerPane.setScrollingDisabled(true, false);
+        tilePickerPane.setPosition(tilePickerBounds.x, tilePickerBounds.y);
+        tilePickerPane.setSize(tilePickerBounds.width, tilePickerBounds.height);
+
+        footerTable.left().padLeft(UI_MARGIN);
+        footerTable.left().add(brushButton).expandX();
+        footerTable.left().add(eraseModeButton).expandX();
+        footerTable.left().add(linkModeButton).expandX();
+        footerTable.left().add(linkageLabel);
+        footerTable.left().padRight(UI_MARGIN);
+        footerTable.row();
+
+        // Add widgets to stage -----------------------------------------------
+
+        stage.addActor(headerTable);
+        stage.addActor(tilePickerPane);
+        stage.addActor(footerTable);
     }
 
     // ------------------------------------------------------------------------
