@@ -466,7 +466,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
                 if (cellX >= 0 && cellX < Level.CELL_WIDTH && cellY >= 0 && cellY < Level.CELL_HEIGHT) {
                     int index = cellY * levelWidth + cellX;
                     final GameObjectProps props = objectProps.get(index);
-                    props.linkages = linkageValue;
+                    props.linkages = (eraseMode ? 0 : linkageValue);
                     props.updateBits();
                 }
             } else {
