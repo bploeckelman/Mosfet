@@ -18,18 +18,12 @@ public class Background {
 
     ModelInstance backgroundFloor;
     ModelBatch  modelBatch;
-    Environment backgroundEnvironment;
 
     public Background(Vector2 size){
 
         modelBatch = new ModelBatch(new DefaultShaderProvider(Assets.perfragLightConfig));
         backgroundFloor = new ModelInstance(Assets.backgroundModel);
         backgroundFloor.transform.setTranslation(size.x /2, size.y/2 , -1);
-        backgroundEnvironment = new Environment();
-        backgroundEnvironment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1f));
-
-        final PointLight pointLight = new PointLight().set(new Color(1f, 1f, 1f, 1f), 0, 0, 1f, 200f);
-        backgroundEnvironment.add(pointLight);
 
     }
 
@@ -39,7 +33,7 @@ public class Background {
 
     public void render(PerspectiveCamera camera){
         modelBatch.begin(camera);
-        modelBatch.render(backgroundFloor, backgroundEnvironment);
+        modelBatch.render(backgroundFloor);
         modelBatch.end();
     }
 }
