@@ -43,9 +43,8 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
     TextureRegion          sceneRegion;
     Skin                   skin;
     Stage                  stage;
-//    Window                 windowMenu;
-    Table                  windowMenu;
-    Window                 windowToolbar;
+    Table                  headerTable;
+    Table                  footerTable;
     InfoDialog             infoDialog;
     OrthographicCamera     uiCamera;
     Entity.Type            selectedEntityType;
@@ -205,21 +204,13 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         uiCamera.update(true);
         stage = new Stage(new StretchViewport(Config.width, Config.height));
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-
-//        windowMenu = new Window("LevelEd - Main Menu", skin);
-//        windowMenu.setMovable(false);
-//        windowMenu.setResizable(false);
-        windowMenu = new Table(skin);
-        windowMenu.setSize(uiCamera.viewportWidth, 60f);
-        windowMenu.setPosition(0f, uiCamera.viewportHeight - 60f);
-
-        windowToolbar = new Window("Toolbar", skin);
-        windowToolbar.setMovable(false);
-        windowToolbar.setResizable(false);
-        windowToolbar.setSize(uiCamera.viewportWidth, 60f);
-        windowToolbar.setPosition(0f, 0f);
-
         infoDialog = new InfoDialog("Info", skin);
+        headerTable = new Table(skin);
+        headerTable.setSize(uiCamera.viewportWidth, 60f);
+        headerTable.setPosition(0f, uiCamera.viewportHeight - 60f);
+        footerTable = new Table(skin);
+        footerTable.setSize(uiCamera.viewportWidth, 60f);
+        footerTable.setPosition(0f, 0f);
 
         final ImageButton playButton = new ImageButton(new TextureRegionDrawable(Assets.uiPlayButtonRegion),
                                                        new TextureRegionDrawable(Assets.uiPlayButtonDownRegion));
@@ -319,20 +310,24 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         entityTypeSelect.setSelected(Entity.Type.BLANK);
         selectedEntityType = Entity.Type.BLANK;
 
-        windowMenu.left().padLeft(UI_MARGIN).add(playButton).expandX();
-        windowMenu.left().add(newButton).expandX();
-        windowMenu.left().add(saveButton).expandX();
-        windowMenu.left().add(loadButton).expandX().padRight(UI_MARGIN);
-        windowMenu.row();
+        headerTable.left().padLeft(UI_MARGIN);
+        headerTable.left().add(playButton).expandX();
+        headerTable.left().add(newButton).expandX();
+        headerTable.left().add(saveButton).expandX();
+        headerTable.left().add(loadButton).expandX();
+        headerTable.left().padRight(UI_MARGIN);
+        headerTable.row();
 
-        windowToolbar.left().add(entityTypeSelect).fillX().expandX().padRight(15f);
-        windowToolbar.left().add(eraseModeButton).padRight(15f);
-        windowToolbar.left().add(linkModeButton).padRight(5f);
-        windowToolbar.left().add(linkageLabel).padRight(5f);
-        windowToolbar.row();
+        footerTable.left().padLeft(UI_MARGIN);
+        footerTable.left().add(entityTypeSelect).expandX();
+        footerTable.left().add(eraseModeButton).expandX();
+        footerTable.left().add(linkModeButton).expandX();
+        footerTable.left().add(linkageLabel);
+        footerTable.left().padRight(UI_MARGIN);
+        footerTable.row();
 
-        stage.addActor(windowMenu);
-        stage.addActor(windowToolbar);
+        stage.addActor(headerTable);
+        stage.addActor(footerTable);
     }
 
     // ------------------------------------------------------------------------
