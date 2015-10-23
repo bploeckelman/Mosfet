@@ -25,9 +25,11 @@ public class Level {
     boolean hasSpawn;
     boolean hasExit;
     public int levelIndex;
+    public String introText;
 
     // Json reader requires no-arg ctor
     public Level() {
+        introText = "From empty constructor";
     }
 
     public Level(int width, int height) {
@@ -37,6 +39,8 @@ public class Level {
         this.cells    = new int[numCells];
         this.hasSpawn = false;
         this.hasExit  = false;
+        this.introText = "Something Placeholder no Objects";
+
     }
 
     public Level(int width, int height, Array<GameObjectProps> objectPropsArray) {
@@ -46,7 +50,7 @@ public class Level {
         this.cells    = new int[numCells];
         this.hasSpawn = false;
         this.hasExit  = false;
-
+        this.introText = "Something Placeholder with objects";
         int i = 0;
         for (GameObjectProps objectProps : objectPropsArray) {
             cells[i] = objectProps.getBits();

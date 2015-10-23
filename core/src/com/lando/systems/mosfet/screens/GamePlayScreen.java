@@ -32,6 +32,7 @@ import com.lando.systems.mosfet.utils.accessors.Vector3Accessor;
 import com.lando.systems.mosfet.utils.camera.PerspectiveCameraController;
 import com.lando.systems.mosfet.world.Background;
 import com.lando.systems.mosfet.world.Entity;
+import com.lando.systems.mosfet.world.IntroTextPanel;
 import com.lando.systems.mosfet.world.Level;
 
 /**
@@ -61,6 +62,7 @@ public class GamePlayScreen extends GameScreen {
     Vector3                 spawnPosition;
     Vector3                 cameraPosition;
     Vector3                 cameraLookAt;
+    IntroTextPanel          introText;
 
 
     public GamePlayScreen(MosfetGame game, Level level) {
@@ -129,6 +131,8 @@ public class GamePlayScreen extends GameScreen {
         rotateCameraLeftButton = new Rectangle(50, uiCamera.viewportHeight - 100, 50, 50);
         rotateCameraRightButton = new Rectangle(uiCamera.viewportWidth -100, uiCamera.viewportHeight - 100, 50, 50);
         background = new Background(new Vector2(levelWidth, levelHeight));
+        introText = new IntroTextPanel(level.introText, uiCamera);
+
     }
 
     private void resetLevel(){
@@ -255,6 +259,9 @@ public class GamePlayScreen extends GameScreen {
             perCamController.update();
         }
 
+        if (introText.update(delta)) return; // Don't do game things yet
+
+
         movementDelay -= delta;
         if (movementDelay <= 0){
             for(BaseGameObject obj : gameObjects){
@@ -349,6 +356,7 @@ public class GamePlayScreen extends GameScreen {
             batch.draw(Assets.leftArrow, rotateCameraLeftButton.x, rotateCameraLeftButton.y, rotateCameraLeftButton.width, rotateCameraLeftButton.height);
             batch.draw(Assets.rightArrow, rotateCameraRightButton.x, rotateCameraRightButton.y, rotateCameraRightButton.width, rotateCameraRightButton.height);
 
+            introText.render(batch);
             batch.end();
         }
         sceneFrameBuffer.end();
