@@ -38,6 +38,7 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
     private Ray lookRay = new Ray();
     private final Plane zZeroPlane = new Plane(Vector3.Z, Vector3.Zero);
     public  boolean pause = false;
+    private float currentFreeRotateAngle = 0;
 
     public PerspectiveCameraController (PerspectiveCamera camera, Vector2 size) {
         this.levelSize = size;
@@ -204,9 +205,9 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-        if (true){
-            return false;
-        }
+//        if (true){
+//            return false;
+//        }
         float initalAngle = (float)(Math.toDegrees(Math.atan2(initialPointer1.y - initialPointer2.y, initialPointer1.x - initialPointer2.x)));
         float newAngle = (float)(Math.toDegrees(Math.atan2(pointer1.y - pointer2.y, pointer1.x - pointer2.x)));
         float dif = newAngle - initalAngle;
@@ -215,6 +216,7 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
         }
 
         Intersector.intersectRayPlane(new Ray(camera.position, camera.direction), new Plane(Vector3.Z, Vector3.Zero), lookatPosition);
+        currentFreeRotateAngle += dif - lastRotation;
         camera.rotateAround(lookatPosition, Vector3.Z, dif - lastRotation);
         camera.update();
         lastRotation = dif;
