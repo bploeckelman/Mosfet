@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -56,6 +57,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
     ImageButton            brushButton;
     InfoDialog             infoDialog;
     OrthographicCamera     uiCamera;
+    OrthoCamController     orthoCamController;
     Entity.Type            selectedEntityType;
     Array<GameObjectProps> objectProps;
     int                    levelWidth;
@@ -151,9 +153,11 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
     @Override
     protected void enableInput() {
+        orthoCamController = new OrthoCamController(camera);
         final InputMultiplexer mux = new InputMultiplexer();
         mux.addProcessor(stage);
-        mux.addProcessor(new OrthoCamController(camera));
+        mux.addProcessor(orthoCamController);
+        mux.addProcessor(new GestureDetector(orthoCamController));
         mux.addProcessor(this);
         Gdx.input.setInputProcessor(mux);
     }
@@ -457,6 +461,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (orthoCamController.isPinching) return false;
         if (button == 0) {
             leftButtonDown = true;
             int cellX = (int) (getMouseWorldPos().x / Level.CELL_WIDTH);
@@ -491,6 +496,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if (orthoCamController.isPinching) return false;
         if (leftButtonDown && !linkMode) {
             int cellX = (int) (getMouseWorldPos().x / Level.CELL_WIDTH);
             int cellY = (int) (getMouseWorldPos().y / Level.CELL_HEIGHT);
