@@ -9,6 +9,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.IntIntMap;
+import com.lando.systems.mosfet.utils.Utils;
 
 /**
  * Created by Doug on 10/8/2015.
@@ -24,6 +25,7 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
     private int DOWN = Input.Keys.E;
     private int ROTATELEFT = Input.Keys.J;
     private int ROTATERIGHT = Input.Keys.K;
+    private float ROTATIONLOCKANGLE = 45;
     private float velocity = 5;
     private float panVelocity = 20;
     private float degreesPerPixel = 0.5f;
@@ -146,6 +148,22 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
         camera.update(true);
     }
 
+    public void rotateLeft(){
+        float dr = (currentFreeRotateAngle) % ROTATIONLOCKANGLE;
+        if (dr == 0) dr = ROTATIONLOCKANGLE;
+        rotationAmount -= dr;
+        currentFreeRotateAngle -= dr;
+        currentFreeRotateAngle = Utils.wrapValue(currentFreeRotateAngle, 0, 360);
+    }
+
+    public void rotateRight(){
+        float dr = ROTATIONLOCKANGLE - ((currentFreeRotateAngle) % ROTATIONLOCKANGLE);
+        if (dr == 0) dr = ROTATIONLOCKANGLE;
+        rotationAmount += dr;
+        currentFreeRotateAngle += dr;
+        currentFreeRotateAngle = Utils.wrapValue(currentFreeRotateAngle, 0, 360);
+    }
+
     public void addRotation(float amount){
         rotationAmount += amount;
     }
@@ -205,9 +223,9 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-//        if (true){
-//            return false;
-//        }
+        if (pause){
+            return false;
+        }
         float initalAngle = (float)(Math.toDegrees(Math.atan2(initialPointer1.y - initialPointer2.y, initialPointer1.x - initialPointer2.x)));
         float newAngle = (float)(Math.toDegrees(Math.atan2(pointer1.y - pointer2.y, pointer1.x - pointer2.x)));
         float dif = newAngle - initalAngle;
@@ -217,6 +235,7 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
 
         Intersector.intersectRayPlane(new Ray(camera.position, camera.direction), new Plane(Vector3.Z, Vector3.Zero), lookatPosition);
         currentFreeRotateAngle += dif - lastRotation;
+        currentFreeRotateAngle = Utils.wrapValue(currentFreeRotateAngle, 0, 360);
         camera.rotateAround(lookatPosition, Vector3.Z, dif - lastRotation);
         camera.update();
         lastRotation = dif;

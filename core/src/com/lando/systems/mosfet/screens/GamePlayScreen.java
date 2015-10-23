@@ -274,10 +274,12 @@ public class GamePlayScreen extends GameScreen {
                 touchPoint = new Vector2(touchPoint3.x, touchPoint3.y);
             }
             if (rotateCameraLeftButton.contains(touchPoint)){
-                perCamController.addRotation(-90);
+                perCamController.rotateLeft();
+//                perCamController.addRotation(-90);
             }
             if (rotateCameraRightButton.contains(touchPoint)){
-                perCamController.addRotation(90);
+                perCamController.rotateRight();
+//                perCamController.addRotation(90);
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP) || forwardButton.contains(touchPoint)){
                 for (BaseGameObject obj : gameObjects){
