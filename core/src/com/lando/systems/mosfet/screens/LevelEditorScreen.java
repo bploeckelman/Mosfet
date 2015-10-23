@@ -126,9 +126,9 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
                 if (linkMode && linkId != 0) {
                     final String linkIdStr = "" + linkId;
                     glyphLayout.setText(Assets.font, linkIdStr);
-                    // TODO: set color based on linkId
-                    batch.setColor(Color.WHITE);
+                    Assets.font.setColor(getLinkColor(linkId));
                     Assets.font.draw(batch, linkIdStr, x + hw - glyphLayout.width / 2f, y + hh + glyphLayout.height / 2f);
+                    Assets.font.setColor(Color.WHITE);
                 }
                 ++i;
             }
@@ -527,6 +527,20 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         setPropsAt(cellX, cellY, (isEraseMode()) ? Entity.Type.BLANK : getSelectedEntityType());
         lastCellClickedX = cellX;
         lastCellClickedY = cellY;
+    }
+
+    private Color getLinkColor(int linkId) {
+        switch (linkId % 8) {
+            default:
+            case 0: return Color.RED;
+            case 1: return Color.GREEN;
+            case 2: return Color.BLUE;
+            case 3: return Color.ORANGE;
+            case 4: return Color.CYAN;
+            case 5: return Color.GOLD;
+            case 6: return Color.PURPLE;
+            case 7: return Color.PINK;
+        }
     }
 
 }
