@@ -131,11 +131,6 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
                 ++i;
             }
             batch.end();
-
-            // Draw the user interface
-//            stage.setDebugAll(true);
-            batch.setColor(Color.WHITE);
-            stage.draw();
         }
         sceneFrameBuffer.end();
 
@@ -148,6 +143,10 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
             batch.draw(sceneRegion, 0, 0);
         }
         batch.end();
+
+        // Draw the user interface
+//        stage.setDebugAll(true);
+        stage.draw();
     }
 
     @Override
