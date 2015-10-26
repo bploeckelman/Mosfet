@@ -7,8 +7,8 @@ public class Utils {
 
     public static float wrapValue(float val, float min, float max){
         float range = max - min;
-        if (val > max) val -= range;
-        if (val < min) val += range;
+        while (val > max) val -= range;
+        while (val < min) val += range;
         return val;
     }
 }
