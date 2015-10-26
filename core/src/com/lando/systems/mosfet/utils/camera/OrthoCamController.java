@@ -30,6 +30,7 @@ public class OrthoCamController extends InputAdapter implements GestureDetector.
     public MutableFloat camera_zoom = new MutableFloat(initial_camera_zoom);
     public boolean debugRender = false;
     public boolean isRightMouseDown = false;
+    public boolean pinchEnabled = false;
     public static boolean isPinching = false; // static so it can be accessed by both this instance and GestureDetectors based of this object
     public float initialScale;
 
@@ -66,7 +67,6 @@ public class OrthoCamController extends InputAdapter implements GestureDetector.
     public boolean touchDown (int x, int y, int pointer, int button) {
         initialScale = camera.zoom;
         initialPosition.set(camera.position.x, camera.position.y, 0f);
-        Gdx.app.log("TD-INT", "touched " + x + "," + y);
         if (button == Input.Buttons.RIGHT) {
             isRightMouseDown = true;
         }
@@ -102,7 +102,6 @@ public class OrthoCamController extends InputAdapter implements GestureDetector.
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
         initialPosition.set(camera.position.x, camera.position.y, 0f);
-        Gdx.app.log("TD-FLOAT", "touched " + x + "," + y);
         return false;
     }
 
@@ -133,6 +132,8 @@ public class OrthoCamController extends InputAdapter implements GestureDetector.
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
+        if (!pinchEnabled) return false;
+
         float ratio = initialDistance / distance;
         float zoom = initialScale * ratio;
         zoom = Math.max(.2f, Math.min(zoom, max_zoom));
@@ -143,6 +144,8 @@ public class OrthoCamController extends InputAdapter implements GestureDetector.
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        if (!pinchEnabled) return false;
+
         double dx1 = initialPointer1.x - pointer1.x;
         double dx2 = initialPointer2.x - pointer2.x;
         double dy1 = initialPointer1.y - pointer1.y;

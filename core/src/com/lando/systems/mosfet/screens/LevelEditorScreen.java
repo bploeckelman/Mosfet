@@ -62,6 +62,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
     Array<GameObjectProps> objectProps;
     int                    levelWidth;
     int                    levelHeight;
+    boolean                cameraMode;
     boolean                eraseMode;
     boolean                linkMode;
     int                    linkageValue;
@@ -339,6 +340,21 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         });
         linkMode = false;
 
+        final ImageButton cameraModeButton = new ImageButton(new TextureRegionDrawable(Assets.uiCameraButtonRegion),
+                                                             new TextureRegionDrawable(Assets.uiCameraButtonDownRegion),
+                                                             new TextureRegionDrawable(Assets.uiCameraButtonCheckedRegion));
+        cameraModeButton.getImage().setFillParent(true);
+        cameraModeButton.getImageCell().expand().fill();
+        cameraModeButton.addListener(new TextTooltip("Camera Mode", skin));
+        cameraModeButton.addListener(new ButtonInputListenerAdapter() {
+            @Override
+        public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                cameraMode = cameraModeButton.isChecked();
+                orthoCamController.pinchEnabled = cameraMode;
+            }
+        });
+        cameraMode = false;
+
         // Initialize tile picker ---------------------------------------------
 
         selectedEntityType = Entity.Type.BLANK;
@@ -432,6 +448,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         footerTable.add(eraseModeButton).expand().fill();
         footerTable.add(linkModeButton).expand().fill();
         footerTable.add(linkageLabel);
+        footerTable.add(cameraModeButton).expand().fill();
         footerTable.padRight(UI_MARGIN);
         footerTable.row();
 
@@ -492,12 +509,12 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (orthoCamController.isPinching) return false;
         if (button == 0) {
             leftButtonDown = true;
             int cellX = (int) (getMouseWorldPos().x / Level.CELL_WIDTH);
             int cellY = (int) (getMouseWorldPos().y / Level.CELL_HEIGHT);
 
+            if (orthoCamController.pinchEnabled) return false;
             if (linkMode) {
                 if (cellX >= 0 && cellX < Level.CELL_WIDTH && cellY >= 0 && cellY < Level.CELL_HEIGHT) {
                     int index = cellY * levelWidth + cellX;
@@ -527,7 +544,7 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (orthoCamController.isPinching) return false;
+        if (orthoCamController.pinchEnabled) return false;
         if (leftButtonDown && !linkMode) {
             int cellX = (int) (getMouseWorldPos().x / Level.CELL_WIDTH);
             int cellY = (int) (getMouseWorldPos().y / Level.CELL_HEIGHT);

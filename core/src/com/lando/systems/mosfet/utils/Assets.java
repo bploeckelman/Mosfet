@@ -88,6 +88,9 @@ public class Assets {
     public static TextureRegion uiSaveButtonDownRegion;
     public static TextureRegion uiLoadButtonRegion;
     public static TextureRegion uiLoadButtonDownRegion;
+    public static TextureRegion uiCameraButtonRegion;
+    public static TextureRegion uiCameraButtonDownRegion;
+    public static TextureRegion uiCameraButtonCheckedRegion;
 
     public static Model         cubeModel;
     public static Model         robotModel;
@@ -173,6 +176,9 @@ public class Assets {
         uiSaveButtonDownRegion     = uiSpritesheetRegions[1][4];
         uiLoadButtonRegion         = uiSpritesheetRegions[0][5];
         uiLoadButtonDownRegion     = uiSpritesheetRegions[1][5];
+        uiCameraButtonRegion       = uiSpritesheetRegions[0][6];
+        uiCameraButtonDownRegion   = uiSpritesheetRegions[1][6];
+        uiCameraButtonCheckedRegion= uiSpritesheetRegions[2][6];
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.2f, 0.2f, 1f));
