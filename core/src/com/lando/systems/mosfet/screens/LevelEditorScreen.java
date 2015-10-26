@@ -44,8 +44,8 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
     private static final float UI_MARGIN              = 15f;
     private static final float UI_PICKER_MARGIN       = 10f;
-    private static final float TWEEN_TIME_PICKER_HIDE = 0.3f;
-    private static final float TWEEN_TIME_PICKER_SHOW = 0.15f;
+    private static final float TWEEN_TIME_PICKER_HIDE = 0.2f;
+    private static final float TWEEN_TIME_PICKER_SHOW = 0.1f;
 
     FrameBuffer            sceneFrameBuffer;
     TextureRegion          sceneRegion;
@@ -222,14 +222,19 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         infoDialog = new InfoDialog("Info", skin);
 
+        final float HEADER_TABLE_HEIGHT = 64f;
+        final float FOOTER_TABLE_HEIGHT = 64f;
+
         // Initialize header table --------------------------------------------
 
         headerTable = new Table(skin);
-        headerTable.setSize(uiCamera.viewportWidth, 60f);
-        headerTable.setPosition(0f, uiCamera.viewportHeight - 60f);
+        headerTable.setSize(uiCamera.viewportWidth, HEADER_TABLE_HEIGHT);
+        headerTable.setPosition(0f, uiCamera.viewportHeight - HEADER_TABLE_HEIGHT);
 
         final ImageButton playButton = new ImageButton(new TextureRegionDrawable(Assets.uiPlayButtonRegion),
                                                        new TextureRegionDrawable(Assets.uiPlayButtonDownRegion));
+        playButton.getImage().setFillParent(true);
+        playButton.getImageCell().expand().fill();
         playButton.addListener(new ButtonInputListenerAdapter() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -242,6 +247,8 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         });
         final ImageButton newButton = new ImageButton(new TextureRegionDrawable(Assets.uiNewButtonRegion),
                                                       new TextureRegionDrawable(Assets.uiNewButtonDownRegion));
+        newButton.getImage().setFillParent(true);
+        newButton.getImageCell().expand().fill();
         newButton.addListener(new TextTooltip("New Level", skin));
         newButton.addListener(new ButtonInputListenerAdapter() {
             @Override
@@ -251,6 +258,8 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         });
         final ImageButton saveButton = new ImageButton(new TextureRegionDrawable(Assets.uiSaveButtonRegion),
                                                        new TextureRegionDrawable(Assets.uiSaveButtonDownRegion));
+        saveButton.getImage().setFillParent(true);
+        saveButton.getImageCell().expand().fill();
         saveButton.addListener(new TextTooltip("Save Level", skin));
         saveButton.addListener(new ButtonInputListenerAdapter() {
             @Override
@@ -261,6 +270,8 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
         final ImageButton loadButton = new ImageButton(new TextureRegionDrawable(Assets.uiLoadButtonRegion),
                                                        new TextureRegionDrawable(Assets.uiLoadButtonDownRegion));
+        loadButton.getImage().setFillParent(true);
+        loadButton.getImageCell().expand().fill();
         loadButton.addListener(new TextTooltip("Load Level", skin));
         loadButton.addListener(new ButtonInputListenerAdapter() {
             @Override
@@ -269,23 +280,25 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
             }
         });
 
-        headerTable.left().padLeft(UI_MARGIN);
-        headerTable.left().add(playButton).expandX();
-        headerTable.left().add(newButton).expandX();
-        headerTable.left().add(saveButton).expandX();
-        headerTable.left().add(loadButton).expandX();
-        headerTable.left().padRight(UI_MARGIN);
+        headerTable.padLeft(UI_MARGIN);
+        headerTable.add(playButton).expand().fill();
+        headerTable.add(newButton).expand().fill();
+        headerTable.add(saveButton).expand().fill();
+        headerTable.add(loadButton).expand().fill();
+        headerTable.padRight(UI_MARGIN);
         headerTable.row();
 
         // Initialize footer table --------------------------------------------
 
         footerTable = new Table(skin);
-        footerTable.setSize(uiCamera.viewportWidth, 60f);
+        footerTable.setSize(uiCamera.viewportWidth, FOOTER_TABLE_HEIGHT);
         footerTable.setPosition(0f, 0f);
 
         final ImageButton eraseModeButton = new ImageButton(new TextureRegionDrawable(Assets.uiEraseButtonRegion),
                                                             new TextureRegionDrawable(Assets.uiEraseButtonDownRegion),
                                                             new TextureRegionDrawable(Assets.uiEraseButtonCheckedRegion));
+        eraseModeButton.getImage().setFillParent(true);
+        eraseModeButton.getImageCell().expand().fill();
         eraseModeButton.addListener(new TextTooltip("Erase Mode", skin));
         eraseModeButton.addListener(new ButtonInputListenerAdapter() {
             @Override
@@ -296,7 +309,6 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         eraseMode = false;
 
         linkageLabel = new Label("#" + linkageValue, skin);
-        linkageLabel.setColor(Color.DARK_GRAY);
         // TODO: handle changing link id more effectively
         linkageLabel.addListener(new ClickListener() {
             @Override
@@ -314,6 +326,8 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         final ImageButton linkModeButton = new ImageButton(new TextureRegionDrawable(Assets.uiLinkButtonRegion),
                                                            new TextureRegionDrawable(Assets.uiLinkButtonDownRegion),
                                                            new TextureRegionDrawable(Assets.uiLinkButtonCheckedRegion));
+        linkModeButton.getImage().setFillParent(true);
+        linkModeButton.getImageCell().expand().fill();
         linkModeButton.addListener(new TextTooltip("Link Mode", skin));
         linkModeButton.addListener(new ButtonInputListenerAdapter() {
             @Override
@@ -329,19 +343,34 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
 
         selectedEntityType = Entity.Type.BLANK;
         brushButton = new ImageButton(new TextureRegionDrawable(Entity.Type.BLANK.getRegion()));
+        brushButton.getImage().setFillParent(true);
+        brushButton.getImageCell().expand().fill();
         brushButton.addListener(new ClickListener() {
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                tilePickerPane.setVisible(true);
-
-                Tween.to(tilePickerBounds, RectangleAccessor.XYWH, TWEEN_TIME_PICKER_SHOW)
-                     .target(tilePickerShowBounds.x,
-                             tilePickerShowBounds.y,
-                             tilePickerShowBounds.width,
-                             tilePickerShowBounds.height)
-                     .ease(Sine.OUT)
-                     .start(Assets.tween);
-
+                if (tilePickerPane.isVisible()) {
+                    float w = brushButton.getImage().getWidth();
+                    float h = brushButton.getImage().getHeight();
+                    Tween.to(tilePickerBounds, RectangleAccessor.XYWH, TWEEN_TIME_PICKER_HIDE)
+                         .target(brushButton.getX() + w / 2f, brushButton.getY() + h / 2f, w / 4f, h / 2f)
+                         .ease(Sine.OUT)
+                         .setCallback(new TweenCallback() {
+                             @Override
+                             public void onEvent(int i, BaseTween<?> baseTween) {
+                                 tilePickerPane.setVisible(false);
+                             }
+                         })
+                         .start(Assets.tween);
+                } else {
+                    tilePickerPane.setVisible(true);
+                    Tween.to(tilePickerBounds, RectangleAccessor.XYWH, TWEEN_TIME_PICKER_SHOW)
+                         .target(tilePickerShowBounds.x,
+                                 tilePickerShowBounds.y,
+                                 tilePickerShowBounds.width,
+                                 tilePickerShowBounds.height)
+                         .ease(Sine.OUT)
+                         .start(Assets.tween);
+                }
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
@@ -361,16 +390,18 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
                     selectedEntityType = entityType;
 
                     final ImageButton.ImageButtonStyle style = brushButton.getStyle();
-                    style.imageUp = new TextureRegionDrawable(entityType.getRegion());
-                    brushButton.setStyle(style);
 
+                    float w = brushButton.getImage().getWidth();
+                    float h = brushButton.getImage().getHeight();
                     Tween.to(tilePickerBounds, RectangleAccessor.XYWH, TWEEN_TIME_PICKER_HIDE)
-                         .target(brushButton.getX(), brushButton.getY(), brushButton.getWidth(), brushButton.getHeight())
+                         .target(brushButton.getX() + w / 2f, brushButton.getY() + h / 2f, w / 4f, h / 2f)
                          .ease(Sine.OUT)
                          .setCallback(new TweenCallback() {
                              @Override
                              public void onEvent(int i, BaseTween<?> baseTween) {
                                  tilePickerPane.setVisible(false);
+                                 style.imageUp = new TextureRegionDrawable(entityType.getRegion());
+                                 brushButton.setStyle(style);
                              }
                          })
                          .start(Assets.tween);
@@ -396,12 +427,12 @@ public class LevelEditorScreen extends GameScreen implements InputProcessor {
         tilePickerPane.setPosition(tilePickerBounds.x, tilePickerBounds.y);
         tilePickerPane.setSize(tilePickerBounds.width, tilePickerBounds.height);
 
-        footerTable.left().padLeft(UI_MARGIN);
-        footerTable.left().add(brushButton).expandX();
-        footerTable.left().add(eraseModeButton).expandX();
-        footerTable.left().add(linkModeButton).expandX();
-        footerTable.left().add(linkageLabel);
-        footerTable.left().padRight(UI_MARGIN);
+        footerTable.padLeft(UI_MARGIN);
+        footerTable.add(brushButton).expand().fill();
+        footerTable.add(eraseModeButton).expand().fill();
+        footerTable.add(linkModeButton).expand().fill();
+        footerTable.add(linkageLabel);
+        footerTable.padRight(UI_MARGIN);
         footerTable.row();
 
         // Add widgets to stage -----------------------------------------------
