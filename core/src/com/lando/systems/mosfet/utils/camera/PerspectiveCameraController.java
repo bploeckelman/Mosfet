@@ -9,6 +9,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.IntIntMap;
+import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Utils;
 
 /**
@@ -41,9 +42,11 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
     private final Plane zZeroPlane = new Plane(Vector3.Z, Vector3.Zero);
     public  boolean pause = false;
     private float currentFreeRotateAngle = 0;
+    private GamePlayScreen level;
 
-    public PerspectiveCameraController (PerspectiveCamera camera, Vector2 size) {
-        this.levelSize = size;
+    public PerspectiveCameraController (PerspectiveCamera camera, GamePlayScreen level) {
+        this.levelSize = new Vector2(level.level.getWidth(), level.level.getHeight());
+        this.level = level;
         this.camera = camera;
     }
 
@@ -89,22 +92,22 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
     public void update (float deltaTime) {
         if (pause) return;
 
-        if (keys.containsKey(FORWARD)) {
-            tmp.set(camera.direction.x, camera.direction.y, 0).nor().scl(deltaTime * velocity);
-            camera.position.add(tmp);
-        }
-        if (keys.containsKey(BACKWARD)) {
-            tmp.set(camera.direction.x, camera.direction.y, 0).nor().scl(-deltaTime * velocity);
-            camera.position.add(tmp);
-        }
-        if (keys.containsKey(STRAFE_LEFT)) {
-            tmp.set(camera.direction).crs(camera.up).nor().scl(-deltaTime * velocity);
-            camera.position.add(tmp);
-        }
-        if (keys.containsKey(STRAFE_RIGHT)) {
-            tmp.set(camera.direction).crs(camera.up).nor().scl(deltaTime * velocity);
-            camera.position.add(tmp);
-        }
+//        if (keys.containsKey(FORWARD)) {
+//            tmp.set(camera.direction.x, camera.direction.y, 0).nor().scl(deltaTime * velocity);
+//            camera.position.add(tmp);
+//        }
+//        if (keys.containsKey(BACKWARD)) {
+//            tmp.set(camera.direction.x, camera.direction.y, 0).nor().scl(-deltaTime * velocity);
+//            camera.position.add(tmp);
+//        }
+//        if (keys.containsKey(STRAFE_LEFT)) {
+//            tmp.set(camera.direction).crs(camera.up).nor().scl(-deltaTime * velocity);
+//            camera.position.add(tmp);
+//        }
+//        if (keys.containsKey(STRAFE_RIGHT)) {
+//            tmp.set(camera.direction).crs(camera.up).nor().scl(deltaTime * velocity);
+//            camera.position.add(tmp);
+//        }
         if (keys.containsKey(UP)) {
             camera.fieldOfView = Math.min(camera.fieldOfView + (zoomSpeed * deltaTime), 90);
         }
@@ -133,7 +136,7 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
         }
 
         if (lookatPosition.x < 0){
-            camera.position.add(-lookatPosition.x, 0, 0);
+            camera.position.add( - lookatPosition.x, 0, 0);
         }
         if (lookatPosition.x > levelSize.x){
             camera.position.add(-(lookatPosition.x - levelSize.x), 0, 0);

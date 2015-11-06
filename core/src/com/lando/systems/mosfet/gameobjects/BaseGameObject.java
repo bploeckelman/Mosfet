@@ -15,7 +15,7 @@ import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.accessors.Vector2Accessor;
 
 /**
- * Created by Karla on 9/10/2015.
+ * Created by Doug on 9/10/2015.
  */
 public class BaseGameObject {
     public enum DIR {UP, DOWN, LEFT, RIGHT}

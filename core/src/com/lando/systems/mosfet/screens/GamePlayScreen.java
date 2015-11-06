@@ -43,11 +43,11 @@ public class GamePlayScreen extends GameScreen {
 
     FrameBuffer             sceneFrameBuffer;
     TextureRegion           sceneRegion;
-    Level                   level;
+    public Level                   level;
     Array<BaseGameObject>   gameObjects;
     Array<ModelInstance>    floorCellInstances;
     Background              background;
-    Player                  player;
+    public Player                  player;
     float                   movementDelay;
     Rectangle               forwardButton;
     Rectangle               backwardButton;
@@ -63,6 +63,8 @@ public class GamePlayScreen extends GameScreen {
     Vector3                 cameraPosition;
     Vector3                 cameraLookAt;
     IntroTextPanel          introText;
+
+    int                     movesTaken;
 
 
     public GamePlayScreen(MosfetGame game, Level level) {
@@ -111,7 +113,7 @@ public class GamePlayScreen extends GameScreen {
         perspectiveCamera.far = 300f;
         perspectiveCamera.update();
         renderAs3d = true;
-        perCamController = new PerspectiveCameraController(perspectiveCamera, new Vector2(levelWidth, levelHeight));
+        perCamController = new PerspectiveCameraController(perspectiveCamera, this);
 
         enableInput();
 
@@ -136,6 +138,7 @@ public class GamePlayScreen extends GameScreen {
     }
 
     private void resetLevel(){
+        movesTaken = 0;
         Assets.environment.clear();
         Assets.environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.5f, 0.5f, 0.5f, 1f));
 
@@ -285,6 +288,7 @@ public class GamePlayScreen extends GameScreen {
                 for (BaseGameObject obj : gameObjects){
                     obj.move(true, this);
                 }
+                movesTaken++;
                 resolveCollisions();
                 processInteractions();
                 movementDelay = Assets.MOVE_DELAY;
@@ -293,6 +297,7 @@ public class GamePlayScreen extends GameScreen {
                 for (BaseGameObject obj : gameObjects){
                     obj.move(false, this);
                 }
+                movesTaken++;
                 resolveCollisions();
                 processInteractions();
                 movementDelay = Assets.MOVE_DELAY;
@@ -301,12 +306,14 @@ public class GamePlayScreen extends GameScreen {
                 for (BaseGameObject obj : gameObjects){
                     obj.rotate(false);
                 }
+                movesTaken++;
                 movementDelay = Assets.MOVE_DELAY;
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.D) || Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || turnRightButton.contains(touchPoint)){
                 for (BaseGameObject obj : gameObjects){
                     obj.rotate(true);
                 }
+                movesTaken++;
                 movementDelay = Assets.MOVE_DELAY;
             }
 
@@ -348,7 +355,7 @@ public class GamePlayScreen extends GameScreen {
             // Draw user interface stuff
             batch.begin();
             batch.setProjectionMatrix(uiCamera.combined);
-            Assets.font.draw(batch, "This... is... MOSFET!", 10, uiCamera.viewportHeight - 10);
+            Assets.font.draw(batch, "Moves: " + movesTaken, 10, uiCamera.viewportHeight - 10);
 
             batch.draw(Assets.upArrow, forwardButton.x, forwardButton.y, forwardButton.width, forwardButton.height);
             batch.draw(Assets.downArrow, backwardButton.x, backwardButton.y, backwardButton.width, backwardButton.height);
@@ -414,6 +421,7 @@ public class GamePlayScreen extends GameScreen {
                         objB.conflict = true;
                     }
                 }
+                if (objA.pos.x < 0 || objA.pos.x >= level.getWidth() || objA.pos.y < 0 || objA.pos.y >= level.getHeight()) objA.conflict = true;
             }
             if (!isValid){
                 for (BaseGameObject obj : gameObjects)
