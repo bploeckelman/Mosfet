@@ -55,6 +55,7 @@ public class GamePlayScreen extends GameScreen {
     Rectangle               turnLeftButton;
     Rectangle               rotateCameraLeftButton;
     Rectangle               rotateCameraRightButton;
+    Rectangle               resetLevelButton;
     PerspectiveCamera       perspectiveCamera;
     boolean                 renderAs3d;
 
@@ -115,6 +116,9 @@ public class GamePlayScreen extends GameScreen {
         renderAs3d = true;
         perCamController = new PerspectiveCameraController(perspectiveCamera, this);
 
+        background = new Background(new Vector2(levelWidth, levelHeight));
+        introText = new IntroTextPanel(level.introText, uiCamera);
+
         enableInput();
 
         resetLevel();
@@ -132,13 +136,14 @@ public class GamePlayScreen extends GameScreen {
 
         rotateCameraLeftButton = new Rectangle(50, uiCamera.viewportHeight - 100, 50, 50);
         rotateCameraRightButton = new Rectangle(uiCamera.viewportWidth -100, uiCamera.viewportHeight - 100, 50, 50);
-        background = new Background(new Vector2(levelWidth, levelHeight));
-        introText = new IntroTextPanel(level.introText, uiCamera);
+        resetLevelButton = new Rectangle(uiCamera.viewportWidth /2 - 50, uiCamera.viewportHeight - 100, 100, 50);
+
 
     }
 
     private void resetLevel(){
         movesTaken = 0;
+        introText.reset(uiCamera);
         Assets.environment.clear();
         Assets.environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.5f, 0.5f, 0.5f, 1f));
 
@@ -190,6 +195,7 @@ public class GamePlayScreen extends GameScreen {
         // Link game objects
         for (int i = 0; i < gameObjects.size; ++i) {
             final BaseGameObject gameObject = gameObjects.get(i);
+            gameObject.update(0); // Call once to set rotations
             for (int j = 0; j < gameObjects.size; ++j) {
                 final BaseGameObject otherObject = gameObjects.get(j);
                 if (gameObject == otherObject) continue;
@@ -205,31 +211,13 @@ public class GamePlayScreen extends GameScreen {
         player = new Player(new Vector2(px, py));
         gameObjects.add(player);
 
-        cameraPosition.set(spawnPosition.x, spawnPosition.y, 5);
+        cameraPosition.set(spawnPosition.x, spawnPosition.y -1, 5);
         cameraLookAt.set(spawnPosition);
 
         perCamController.pause = true;
         perspectiveCamera.position.set(cameraPosition);
         perspectiveCamera.lookAt(cameraLookAt);
         perspectiveCamera.update(true);
-        Timeline.createSequence()
-                .push(
-                        Tween.to(cameraPosition, Vector3Accessor.XYZ, 4*Assets.MOVE_DELAY)
-                             .target(spawnPosition.x, spawnPosition.y - 15f, 20f)
-                             .ease(Sine.IN)
-                     )
-                .push(
-                        Tween.to(cameraPosition, Vector3Accessor.XYZ, 1.5f*Assets.MOVE_DELAY)
-                             .target(spawnPosition.x - 15f, spawnPosition.y - 15f, 20f)
-                             .ease(Sine.OUT)
-                             .setCallback(new TweenCallback() {
-                                 @Override
-                                 public void onEvent(int i, BaseTween<?> baseTween) {
-                                     perCamController.pause = false;
-                                 }
-                             })
-                     )
-                .start(Assets.tween);
     }
 
     @Override
@@ -262,7 +250,7 @@ public class GamePlayScreen extends GameScreen {
             perCamController.update();
         }
 
-        if (introText.update(delta)) return; // Don't do game things yet
+        if (introText.update(delta, this)) return; // Don't do game things yet
 
 
         movementDelay -= delta;
@@ -316,6 +304,9 @@ public class GamePlayScreen extends GameScreen {
                 movesTaken++;
                 movementDelay = Assets.MOVE_DELAY;
             }
+            if (resetLevelButton.contains(touchPoint)){
+                resetLevel();
+            }
 
 
         }
@@ -355,17 +346,21 @@ public class GamePlayScreen extends GameScreen {
             // Draw user interface stuff
             batch.begin();
             batch.setProjectionMatrix(uiCamera.combined);
-            Assets.font.draw(batch, "Moves: " + movesTaken, 10, uiCamera.viewportHeight - 10);
-
-            batch.draw(Assets.upArrow, forwardButton.x, forwardButton.y, forwardButton.width, forwardButton.height);
-            batch.draw(Assets.downArrow, backwardButton.x, backwardButton.y, backwardButton.width, backwardButton.height);
-            batch.draw(Assets.leftArrow, turnLeftButton.x, turnLeftButton.y, turnLeftButton.width, turnLeftButton.height);
-            batch.draw(Assets.rightArrow, turnRightButton.x, turnRightButton.y, turnRightButton.width, turnRightButton.height);
-
-            batch.draw(Assets.leftArrow, rotateCameraLeftButton.x, rotateCameraLeftButton.y, rotateCameraLeftButton.width, rotateCameraLeftButton.height);
-            batch.draw(Assets.rightArrow, rotateCameraRightButton.x, rotateCameraRightButton.y, rotateCameraRightButton.width, rotateCameraRightButton.height);
-
             introText.render(batch);
+            if (!introText.fullScreen) {
+                Assets.font.draw(batch, "Moves: " + movesTaken, 10, uiCamera.viewportHeight - 10);
+
+                batch.draw(Assets.upArrow, forwardButton.x, forwardButton.y, forwardButton.width, forwardButton.height);
+                batch.draw(Assets.downArrow, backwardButton.x, backwardButton.y, backwardButton.width, backwardButton.height);
+                batch.draw(Assets.leftArrow, turnLeftButton.x, turnLeftButton.y, turnLeftButton.width, turnLeftButton.height);
+                batch.draw(Assets.rightArrow, turnRightButton.x, turnRightButton.y, turnRightButton.width, turnRightButton.height);
+
+                batch.draw(Assets.leftArrow, rotateCameraLeftButton.x, rotateCameraLeftButton.y, rotateCameraLeftButton.width, rotateCameraLeftButton.height);
+                batch.draw(Assets.rightArrow, rotateCameraRightButton.x, rotateCameraRightButton.y, rotateCameraRightButton.width, rotateCameraRightButton.height);
+
+                batch.draw(Assets.testTexture, resetLevelButton.x, resetLevelButton.y, resetLevelButton.width, resetLevelButton.height);
+            }
+
             batch.end();
         }
         sceneFrameBuffer.end();
@@ -396,8 +391,37 @@ public class GamePlayScreen extends GameScreen {
         return null;
     }
 
+    public void start(){
+        cameraPosition.set(spawnPosition.x, spawnPosition.y -1, 5);
+        cameraLookAt.set(spawnPosition);
+
+        perCamController.pause = true;
+        perspectiveCamera.position.set(cameraPosition);
+        perspectiveCamera.lookAt(cameraLookAt);
+        perspectiveCamera.update(true);
+        Timeline.createSequence()
+                .push(
+                        Tween.to(cameraPosition, Vector3Accessor.XYZ, 4*Assets.MOVE_DELAY)
+                                .target(spawnPosition.x, spawnPosition.y - 15f, 20f)
+                                .ease(Sine.IN)
+                )
+                .push(
+                        Tween.to(cameraPosition, Vector3Accessor.XYZ, 1.5f*Assets.MOVE_DELAY)
+                                .target(spawnPosition.x - 15f, spawnPosition.y - 15f, 20f)
+                                .ease(Sine.OUT)
+                                .setCallback(new TweenCallback() {
+                                    @Override
+                                    public void onEvent(int i, BaseTween<?> baseTween) {
+                                        perCamController.pause = false;
+                                    }
+                                })
+                )
+                .start(Assets.tween);
+    }
+
     public void win(){
         // TODO add logic to transition when you get to the exit
+
         game.setScreen(new LevelSelectScreen(game));
     }
     // ------------------------------------------------------------------------

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
+import com.lando.systems.mosfet.screens.GamePlayScreen;
 import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.accessors.RectangleAccessor;
 import com.lando.systems.mosfet.utils.accessors.Vector2Accessor;
@@ -27,6 +28,10 @@ public class IntroTextPanel {
 
     public IntroTextPanel(String text, OrthographicCamera cam){
         this.text = text;
+        reset(cam);
+    }
+
+    public void reset(OrthographicCamera cam){
         fullScreen = true;
         bounds = new Rectangle(40, 40, cam.viewportWidth - 80, cam.viewportHeight - 80);
         layout = new GlyphLayout();
@@ -35,7 +40,7 @@ public class IntroTextPanel {
         textPosition = new Vector2((cam.viewportWidth - layout.width) /2f, (cam.viewportHeight + layout.height )/ 2f);
     }
 
-    public boolean update(float dt){
+    public boolean update(float dt, GamePlayScreen screen){
         if (!fullScreen) return false;
         if (Gdx.input.justTouched()){
             fullScreen = false;
@@ -45,6 +50,7 @@ public class IntroTextPanel {
             Tween.to(textPosition, Vector2Accessor.Y, 1f)
                     .target(30 + textHeight)
                     .start(Assets.tween);
+            screen.start();
         }
         return true;
     }
