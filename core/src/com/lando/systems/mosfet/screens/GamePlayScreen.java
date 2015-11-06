@@ -30,10 +30,7 @@ import com.lando.systems.mosfet.gameobjects.*;
 import com.lando.systems.mosfet.utils.Assets;
 import com.lando.systems.mosfet.utils.accessors.Vector3Accessor;
 import com.lando.systems.mosfet.utils.camera.PerspectiveCameraController;
-import com.lando.systems.mosfet.world.Background;
-import com.lando.systems.mosfet.world.Entity;
-import com.lando.systems.mosfet.world.IntroTextPanel;
-import com.lando.systems.mosfet.world.Level;
+import com.lando.systems.mosfet.world.*;
 
 /**
  * Brian Ploeckelman created on 9/10/2015.
@@ -61,9 +58,11 @@ public class GamePlayScreen extends GameScreen {
 
     PerspectiveCameraController perCamController;
     Vector3                 spawnPosition;
+    Vector3                 exitPosition;
     Vector3                 cameraPosition;
     Vector3                 cameraLookAt;
     IntroTextPanel          introText;
+    ExitScreenPanel         exitPanel;
 
     int                     movesTaken;
 
@@ -75,6 +74,7 @@ public class GamePlayScreen extends GameScreen {
             throw new GdxRuntimeException("GamePlayScreen requires a valid level");
         }
         spawnPosition = new Vector3();
+        exitPosition = new Vector3();
         this.level = level;
         int levelWidth = level.getWidth();
         int levelHeight = level.getHeight();
@@ -118,7 +118,7 @@ public class GamePlayScreen extends GameScreen {
 
         background = new Background(new Vector2(levelWidth, levelHeight));
         introText = new IntroTextPanel(level.introText, uiCamera);
-
+        exitPanel = new ExitScreenPanel(this);
         enableInput();
 
         resetLevel();
@@ -188,6 +188,7 @@ public class GamePlayScreen extends GameScreen {
                 else if (entityType == Entity.Type.EXIT) {
                     final PointLight pointLight = new PointLight().set(new Color(0f, 1f, 0f, 1f), pos.x, pos.y, 1f, 2f);
                     Assets.environment.add(pointLight);
+                    exitPosition.set(pos.x, pos.y, 0);
                 }
             }
         }
@@ -252,6 +253,13 @@ public class GamePlayScreen extends GameScreen {
 
         if (introText.update(delta, this)) return; // Don't do game things yet
 
+        if (exitPanel.active){
+            exitPanel.update(delta);
+            for (BaseGameObject obj : gameObjects) {
+                obj.update(delta);
+            }
+            return;
+        }
 
         movementDelay -= delta;
         if (movementDelay <= 0){
@@ -346,19 +354,23 @@ public class GamePlayScreen extends GameScreen {
             // Draw user interface stuff
             batch.begin();
             batch.setProjectionMatrix(uiCamera.combined);
-            introText.render(batch);
-            if (!introText.fullScreen) {
-                Assets.font.draw(batch, "Moves: " + movesTaken, 10, uiCamera.viewportHeight - 10);
+            if (exitPanel.active){
+                exitPanel.render(batch);
+            } else {
+                introText.render(batch);
+                if (!introText.fullScreen) {
+                    Assets.font.draw(batch, "Moves: " + movesTaken, 10, uiCamera.viewportHeight - 10);
 
-                batch.draw(Assets.upArrow, forwardButton.x, forwardButton.y, forwardButton.width, forwardButton.height);
-                batch.draw(Assets.downArrow, backwardButton.x, backwardButton.y, backwardButton.width, backwardButton.height);
-                batch.draw(Assets.leftArrow, turnLeftButton.x, turnLeftButton.y, turnLeftButton.width, turnLeftButton.height);
-                batch.draw(Assets.rightArrow, turnRightButton.x, turnRightButton.y, turnRightButton.width, turnRightButton.height);
+                    batch.draw(Assets.upArrow, forwardButton.x, forwardButton.y, forwardButton.width, forwardButton.height);
+                    batch.draw(Assets.downArrow, backwardButton.x, backwardButton.y, backwardButton.width, backwardButton.height);
+                    batch.draw(Assets.leftArrow, turnLeftButton.x, turnLeftButton.y, turnLeftButton.width, turnLeftButton.height);
+                    batch.draw(Assets.rightArrow, turnRightButton.x, turnRightButton.y, turnRightButton.width, turnRightButton.height);
 
-                batch.draw(Assets.leftArrow, rotateCameraLeftButton.x, rotateCameraLeftButton.y, rotateCameraLeftButton.width, rotateCameraLeftButton.height);
-                batch.draw(Assets.rightArrow, rotateCameraRightButton.x, rotateCameraRightButton.y, rotateCameraRightButton.width, rotateCameraRightButton.height);
+                    batch.draw(Assets.leftArrow, rotateCameraLeftButton.x, rotateCameraLeftButton.y, rotateCameraLeftButton.width, rotateCameraLeftButton.height);
+                    batch.draw(Assets.rightArrow, rotateCameraRightButton.x, rotateCameraRightButton.y, rotateCameraRightButton.width, rotateCameraRightButton.height);
 
-                batch.draw(Assets.testTexture, resetLevelButton.x, resetLevelButton.y, resetLevelButton.width, resetLevelButton.height);
+                    batch.draw(Assets.testTexture, resetLevelButton.x, resetLevelButton.y, resetLevelButton.width, resetLevelButton.height);
+                }
             }
 
             batch.end();
@@ -421,8 +433,33 @@ public class GamePlayScreen extends GameScreen {
 
     public void win(){
         // TODO add logic to transition when you get to the exit
-
-        game.setScreen(new LevelSelectScreen(game));
+        perCamController.pause = true;
+        cameraPosition.set(perspectiveCamera.position);
+        cameraLookAt.set(perCamController.lookatPosition);
+        Timeline.createSequence()
+                .push(
+                        Tween.to(cameraLookAt, Vector3Accessor.XYZ, 1f)
+                        .target(exitPosition.x, exitPosition.y, exitPosition.z)
+                )
+                .push(
+                        Tween.to(cameraPosition, Vector3Accessor.XYZ, 1f)
+                                .target(exitPosition.x, exitPosition.y - 15f, 20f)
+                                .ease(Sine.IN)
+                )
+                .push(
+                        Tween.to(cameraPosition, Vector3Accessor.XYZ, 1f)
+                                .target(exitPosition.x, exitPosition.y - 1f, 5f)
+                                .ease(Sine.OUT)
+                                .setCallback(new TweenCallback() {
+                                    @Override
+                                    public void onEvent(int i, BaseTween<?> baseTween) {
+                                        perCamController.pause = false;
+                                    }
+                                })
+                )
+                .start(Assets.tween);
+        exitPanel.activate(3);
+//        game.setScreen(new LevelSelectScreen(game));
     }
     // ------------------------------------------------------------------------
     // Private Implementation

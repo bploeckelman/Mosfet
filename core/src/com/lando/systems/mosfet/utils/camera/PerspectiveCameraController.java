@@ -36,7 +36,7 @@ public class PerspectiveCameraController extends InputAdapter implements Gesture
     private float rotationAmount = 0;
     private float initialFOV;
     private float lastRotation;
-    private Vector3 lookatPosition = new Vector3();
+    public Vector3 lookatPosition = new Vector3();
     private Vector2 levelSize;
     private Ray lookRay = new Ray();
     private final Plane zZeroPlane = new Plane(Vector3.Z, Vector3.Zero);

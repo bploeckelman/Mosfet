@@ -17,8 +17,8 @@ import com.lando.systems.mosfet.utils.Assets;
  */
 public abstract class GameScreen extends ScreenAdapter {
 
-    protected final MosfetGame game;
-    OrthographicCamera uiCamera;
+    public final MosfetGame game;
+    public OrthographicCamera uiCamera;
 
     protected SpriteBatch        batch;
     protected Vector3            mouseScreenPos;
