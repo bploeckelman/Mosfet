@@ -114,7 +114,6 @@ public class Assets {
         perfragLightConfig.vertexShader = Gdx.files.internal("shaders/backgroundvertex.glsl").readString();
         perfragLightConfig.fragmentShader = Gdx.files.internal("shaders/backgroundfrag.glsl").readString();
 
-
         if (tween == null) {
             tween = new TweenManager();
             Tween.setCombinedAttributesLimit(4);
@@ -224,13 +223,13 @@ public class Assets {
         modelParam.textureParameter.minFilter = Texture.TextureFilter.MipMapLinearNearest;
         modelParam.textureParameter.genMipMaps = true;
         assetManager = new AssetManager();
-        assetManager.load("models/cube.g3dj", Model.class, modelParam);
+        assetManager.load("models/wall.g3dj", Model.class, modelParam);
         assetManager.load("models/robot-head.g3dj", Model.class, modelParam);
         assetManager.load("models/ladder.g3dj", Model.class, modelParam);
         assetManager.load("models/crate.g3dj", Model.class, modelParam);
         assetManager.load("models/switch1.g3dj", Model.class, modelParam);
         assetManager.finishLoading();
-        cubeModel = assetManager.get("models/cube.g3dj", Model.class);
+        cubeModel = assetManager.get("models/wall.g3dj", Model.class);
         robotModel = assetManager.get("models/robot-head.g3dj", Model.class);
         ladderModel = assetManager.get("models/ladder.g3dj", Model.class);
         crateModel = assetManager.get("models/crate.g3dj", Model.class);

@@ -181,12 +181,12 @@ public class GamePlayScreen extends GameScreen {
                     floorCellInstances.add(floorCell);
                 }
                 if (entityType == Entity.Type.SPAWN) {
-                    final PointLight pointLight = new PointLight().set(new Color(1f, 0f, 1f, 1f), pos.x, pos.y, 1f, 2f);
+                    final PointLight pointLight = new PointLight().set(new Color(1f, 1f, 1f, 1f), pos.x, pos.y, 1f, 2f);
                     Assets.environment.add(pointLight);
                     spawnPosition.set(pos.x, pos.y, 0);
                 }
                 else if (entityType == Entity.Type.EXIT) {
-                    final PointLight pointLight = new PointLight().set(new Color(0f, 1f, 0f, 1f), pos.x, pos.y, 1f, 2f);
+                    final PointLight pointLight = new PointLight().set(new Color(1f, 1f, 1f, 1f), pos.x, pos.y, 1f, 2f);
                     Assets.environment.add(pointLight);
                     exitPosition.set(pos.x, pos.y, 0);
                 }
@@ -336,7 +336,6 @@ public class GamePlayScreen extends GameScreen {
                 Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
                 background.render(perspectiveCamera);
                 Assets.modelBatch.begin(perspectiveCamera);
-                Assets.modelBatch.render(Assets.coordModelInstance);
                 Assets.modelBatch.render(floorCellInstances, Assets.environment);
                 for (BaseGameObject obj : gameObjects) {
                     obj.render(Assets.modelBatch, Assets.environment);
