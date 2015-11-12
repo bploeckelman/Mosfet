@@ -41,6 +41,8 @@ public class Assets {
     public static SpriteBatch  batch;
     public static ModelBatch   modelBatch;
     public static BitmapFont   font;
+    public static BitmapFont   resistorFont32;
+    public static BitmapFont   resistorFont64;
 
     private static final String PREFS_FILE = "mostfet-prefs";
     public static Preferences prefs;
@@ -127,6 +129,8 @@ public class Assets {
         batch = new SpriteBatch();
         modelBatch = new ModelBatch();
         font = new BitmapFont();
+        resistorFont32 = new BitmapFont(Gdx.files.internal("fonts/resistors-32pt"));
+        resistorFont64 = new BitmapFont(Gdx.files.internal("fonts/resistors-64pt"));
 
         prefs = Gdx.app.getPreferences(PREFS_FILE);
 
@@ -251,6 +255,8 @@ public class Assets {
         batch.dispose();
         modelBatch.dispose();
         font.dispose();
+        resistorFont32.dispose();
+        resistorFont64.dispose();
         testTexture.dispose();
         circleTexture.dispose();
         floorTexture.dispose();
